@@ -4,6 +4,14 @@ All notable changes to Engram are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Polarity audit on caption transcripts.** YouTube auto-captions have no punctuation, so the
+  sentence-based cue matcher treated a whole transcript as one "sentence" and flagged nearly every
+  atom. Switched to a local 14-word window with a stronger overlap threshold — verified on a real
+  3-video build where it cut false positives from 102 to 0 while still catching genuine inversions.
+
 ## [0.1.0] — 2026-06-17
 
 First public release.

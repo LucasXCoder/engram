@@ -40,15 +40,19 @@ STOP = set(
 )
 
 
+#: How many words around an atom's best match count as "near" it. Word-based (not sentence-
+#: based) because auto-generated captions usually have no punctuation — one transcript would
+#: otherwise be a single giant "sentence" and every atom would match it.
+WINDOW = 14
+
+
 def _salient(text: str) -> set:
     words = re.findall(r"[a-z']+", text.lower())
     return {w for w in words if len(w) > 3 and w not in STOP}
 
 
-def _sentences(transcript: str) -> list:
-    # naive but adequate sentence split; keeps leading/trailing spaces for cue matching
-    parts = re.split(r"(?<=[.!?])\s+", transcript)
-    return [" " + p.strip().lower() + " " for p in parts if p.strip()]
+def _tokens(text: str) -> list:
+    return re.findall(r"[a-z']+", text.lower())
 
 
 def audit(brain: Brain) -> list:
@@ -59,8 +63,9 @@ def audit(brain: Brain) -> list:
         for fn in os.listdir(tdir):
             if fn.endswith(".txt"):
                 with open(os.path.join(tdir, fn), encoding="utf-8", errors="ignore") as f:
-                    transcripts[fn[:-4]] = _sentences(f.read())
+                    transcripts[fn[:-4]] = _tokens(f.read())
 
+    cues = NEG_CUES + ATTR_CUES
     suspects = []
     for a in brain.atoms():
         # already anchored or attributed — the author handled the polarity explicitly
@@ -68,24 +73,30 @@ def audit(brain: Brain) -> list:
             continue
         atom_text = " " + a.get("text", "").lower() + " "
         # an atom that itself states the negation/attribution is fine (it captured the framing)
-        if any(c in atom_text for c in NEG_CUES + ATTR_CUES):
+        if any(c in atom_text for c in cues):
             continue
         sal = _salient(a.get("text", ""))
         if not sal:
             continue
         for src in a.get("sources", []):
-            best, best_overlap = None, 0
-            for sent in transcripts.get(src, []):
-                ov = len(sal & set(re.findall(r"[a-z']+", sent)))
-                if ov > best_overlap:
-                    best_overlap, best = ov, sent
-            if best is None or best_overlap < max(2, len(sal) // 3):
+            toks = transcripts.get(src)
+            if not toks:
                 continue
-            hit = next((c for c in NEG_CUES + ATTR_CUES if c in best), None)
+            # slide a WINDOW-word window; find where the atom's salient words concentrate most
+            best_i, best_ov = -1, 0
+            for i in range(max(1, len(toks) - WINDOW + 1)):
+                ov = len(sal.intersection(toks[i:i + WINDOW]))
+                if ov > best_ov:
+                    best_ov, best_i = ov, i
+            # require the atom to be genuinely localized here (>= half its salient words)
+            if best_i < 0 or best_ov < max(3, len(sal) // 2):
+                continue
+            window = " " + " ".join(toks[best_i:best_i + WINDOW]) + " "
+            hit = next((c for c in cues if c in window), None)
             if hit:
                 suspects.append({
                     "id": a["id"], "source": src, "cue": hit.strip(),
-                    "sentence": best.strip(), "text": a["text"],
+                    "sentence": window.strip(), "text": a["text"],
                 })
                 break
     return suspects
