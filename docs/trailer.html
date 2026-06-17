@@ -79,6 +79,8 @@
   #ctl button{font:inherit;font-size:13px;color:var(--dim);background:rgba(255,255,255,.06);
     border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:7px 13px;cursor:pointer}
   #ctl button:hover{color:var(--ink);background:rgba(255,255,255,.12)}
+  #ctl select{font:inherit;font-size:13px;color:var(--dim);background:rgba(20,24,40,.9);
+    border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:7px 10px;cursor:pointer;max-width:180px}
   body.clean #ctl, body.clean #bar{display:none}
   body.frozen #end, body.frozen .cap, body.frozen #qbar, body.frozen #answer{transition:none}
   /* vertical / 9:16 layout — captions drop to the lower third under the (raised) brain */
@@ -121,7 +123,7 @@
 
 <div id="flash"></div>
 <div id="bar"></div>
-<div id="ctl"><button id="snd">🔊 sound</button><button id="fmt">📱 phone</button><button id="skip">skip →</button><button id="again">↺ replay</button></div>
+<div id="ctl"><select id="voice"></select><button id="snd">🔊 sound</button><button id="fmt">📱 phone</button><button id="skip">skip →</button><button id="again">↺ replay</button></div>
 
 <script>
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
@@ -295,15 +297,22 @@ function pad(at,d,pk){[261.6,329.6,392].forEach(f=>{const o=actx.createOscillato
   o.type='sawtooth';o.frequency.value=f;lp.type='lowpass';lp.frequency.value=1300;
   g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+1.8);g.gain.setValueAtTime(pk,at+d-3);g.gain.exponentialRampToValueAtTime(0.0001,at+d);
   o.connect(lp);lp.connect(g);g.connect(master);o.start(at);o.stop(at+d+0.2);});}
+// bright noise swoosh (up = lift, down = settle) — the energetic transition sound
+function swoosh(at,up,pk){const s=actx.createBufferSource();s.buffer=noiseBuf(0.55);const bp=actx.createBiquadFilter();bp.type='bandpass';bp.Q.value=0.9;
+  bp.frequency.setValueAtTime(up?480:4600,at);bp.frequency.exponentialRampToValueAtTime(up?4800:480,at+0.44);
+  const hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=280;
+  const g=actx.createGain();envg(g,at,0.15,pk,0.33);s.connect(bp);bp.connect(hp);hp.connect(g);g.connect(master);s.start(at);s.stop(at+0.6);}
 function scoreFrom(a){
   pad(a,DUR+3,0.035);                                   // bright major bed
-  arpBed(a,0.5,3.0,0.20,0.06); riseUp(a+1.5,1.5,0.16);  // building arp + hype riser
-  stab(a+3.0,[523,659,784,1047],0.15,1.0); subhit(a+3.0,0.45); riseUp(a+3.0,0.5,0.1);  // LAUNCH (bright)
-  arpBed(a+3.4,0,7.0,0.30,0.05);                         // driving momentum under the orbit
-  riseUp(a+10.1,0.9,0.18); stab(a+10.7,[659,880,1047],0.13,0.6); subhit(a+10.7,0.32);  // dive
-  arpBed(a+11.2,0,4.2,0.34,0.045);
-  ping(a+15.8,1047,0.2); ping(a+16.0,1318,0.15);         // happy answer chime
-  stab(a+DUR,[523,659,784,1047,1318],0.17,1.8); subhit(a+DUR,0.5); ping(a+DUR+0.2,1568,0.14);  // triumphant title
+  // a swoosh leads into every caption / beat → that energetic trailer momentum
+  [0.45,6.0,10.2,13.8,16.2,19.2].forEach((tt,i)=>swoosh(a+tt,i%2===0,0.18));
+  arpBed(a,0.5,3.0,0.18,0.07); riseUp(a+1.5,1.5,0.18);  // building arp + hype riser
+  swoosh(a+2.9,true,0.28); stab(a+3.0,[523,659,784,1047],0.16,1.0); subhit(a+3.0,0.5);  // LAUNCH (bright)
+  arpBed(a+3.4,0,7.0,0.26,0.06);                         // driving momentum under the orbit
+  swoosh(a+10.0,true,0.30); riseUp(a+10.1,0.9,0.2); stab(a+10.7,[659,880,1047],0.14,0.6); subhit(a+10.7,0.34);  // dive
+  arpBed(a+11.2,0,4.4,0.30,0.05);
+  ping(a+15.8,1047,0.22); ping(a+16.0,1318,0.16);        // happy answer chime
+  swoosh(a+DUR-0.35,true,0.32); stab(a+DUR,[523,659,784,1047,1318],0.18,1.9); subhit(a+DUR,0.55); ping(a+DUR+0.2,1568,0.15);  // triumphant title
 }
 // ---- rich AI narration (built-in SpeechSynthesis; reads the captions) ----
 let narrate=false, voice=null, endSaid=false;
@@ -324,8 +333,14 @@ function toggleVert(){vertOverride=!VERT;computeVert();fmtBtn.textContent=VERT?'
 fmtBtn.textContent=VERT?'🖥 wide':'📱 phone';
 fmtBtn.onclick=toggleVert;
 const sndBtn=document.getElementById('snd');
-function enableSound(){initAudio();audioOn=true;narrate=true;sndBtn.textContent='🔊 on';loadVoice();
-  if('speechSynthesis' in window)speechSynthesis.resume();actx.resume();restart();}  // gesture → start synced music + voice from the top
+function enableSound(){initAudio();audioOn=true;sndBtn.textContent='🔊 on';actx.resume();restart();}  // music + sfx only; voice is opt-in via the picker
+// voice picker — off by default (browser voices vary); pick one to add narration
+const voiceSel=document.getElementById('voice');
+function fillVoices(){if(!('speechSynthesis' in window))return;const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith('en'));
+  voiceSel._list=vs; voiceSel.innerHTML='<option value="-1">🔇 voiceover: off</option>'+vs.map((v,i)=>'<option value="'+i+'">🗣 '+v.name+'</option>').join('');}
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>{loadVoice();fillVoices();}; fillVoices();}
+voiceSel.onchange=()=>{const i=+voiceSel.value; if(i<0){narrate=false;if('speechSynthesis' in window)speechSynthesis.cancel();}
+  else{voice=voiceSel._list[i];narrate=true;say(voiceSel._list[i].name.split(' ')[0]+' will narrate.');}};  // preview the picked voice
 sndBtn.onclick=enableSound;
 addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')restart();else if(e.key==='v'||e.key==='V')toggleVert();else if(e.key==='s'||e.key==='S')enableSound();});
 addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&performance.now()-t0>(DUR+3)*1000)restart();});
