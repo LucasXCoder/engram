@@ -92,8 +92,8 @@
   <div class="cap mid" data-in="0.7" data-out="3.0"><div class="line"></div><div class="big">Your favorite creator has <span class="accent">hundreds of videos</span>.</div></div>
   <div class="cap" data-in="6.2" data-out="9.7"><div class="line"></div><div class="big">Engram reads every one — and maps how their ideas connect.</div></div>
   <div class="cap" data-in="10.4" data-out="13.6"><div class="line"></div><div class="big">Into one searchable map of <span class="accent">everything they think</span>.</div></div>
-  <div class="cap" data-in="14.2" data-out="16.6"><div class="big">So you can just <span class="accent">ask</span> — in plain English.</div></div>
-  <div class="cap" data-in="22.4" data-out="25.2"><div class="big">Answered in their words — <span class="accent">cited to the exact video</span>.</div></div>
+  <div class="cap" data-in="14.0" data-out="15.8"><div class="big">So you can just <span class="accent">ask</span> — in plain English.</div></div>
+  <div class="cap" data-in="16.4" data-out="19.4"><div class="big">Answered in their words — <span class="accent">cited to the exact video</span>.</div></div>
 </div>
 
 <div id="demo">
@@ -134,7 +134,7 @@ size();addEventListener('resize',size);
 
 const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const COLORS=['#5db4ff','#46e3a4','#ffb24d','#cf9bff','#ffd95e'];
-const DUR=26.6;
+const DUR=22.8;
 const rnd=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const easeIO=t=>{t=clamp(t,0,1);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;};
 const easeOut=t=>1-Math.pow(1-clamp(t,0,1),3),lerp=(a,b,t)=>a+(b-a)*t;
@@ -160,10 +160,10 @@ const CAM=[
   {t:11,dist:520,yaw:1.3,pitch:0.0,tx:200,ty:-30,tz:130},
   {t:14,dist:470,yaw:2.15,pitch:-0.07,tx:230,ty:-5,tz:165},
   {t:15.8,dist:1320,yaw:2.4,pitch:0.13,tx:0,ty:0,tz:0},
-  {t:22.5,dist:1380,yaw:2.95,pitch:0.12,tx:0,ty:0,tz:0},
-  {t:24.5,dist:1280,yaw:3.3,pitch:0.10,tx:0,ty:0,tz:0},
-  {t:26.6,dist:2150,yaw:3.6,pitch:0.07,tx:0,ty:0,tz:0},
-  {t:38,dist:2350,yaw:4.05,pitch:0.07,tx:0,ty:0,tz:0},
+  {t:19.5,dist:1360,yaw:2.85,pitch:0.12,tx:0,ty:0,tz:0},
+  {t:20.8,dist:1280,yaw:3.1,pitch:0.10,tx:0,ty:0,tz:0},
+  {t:22.8,dist:2150,yaw:3.45,pitch:0.07,tx:0,ty:0,tz:0},
+  {t:34,dist:2350,yaw:3.9,pitch:0.07,tx:0,ty:0,tz:0},
 ];
 function cam(t){let i=0;while(i<CAM.length-1&&t>=CAM[i+1].t)i++;const A=CAM[i],B=CAM[Math.min(i+1,CAM.length-1)];
   const k=easeIO((t-A.t)/((B.t-A.t)||1));
@@ -238,13 +238,13 @@ function frame(now){
 
   // --- timeline of overlays ---
   // scrim dims the graph during the demo so the UI reads
-  let sc=0; if(t>13.8&&t<22.6) sc=clamp((t-13.8)/1.2,0,1)*0.66; if(t>=22.6&&t<24) sc=clamp(1-(t-22.6)/1.0,0,1)*0.66;
-  if(t>=25.5) sc=Math.max(sc, clamp((t-25.5)/1.5,0,1)*0.55);   // dim the brain so the title reads
+  let sc=0; if(t>13.8&&t<19.6) sc=clamp((t-13.8)/1.0,0,1)*0.66; if(t>=19.6&&t<20.8) sc=clamp(1-(t-19.6)/1.2,0,1)*0.66;
+  if(t>=21.6) sc=Math.max(sc, clamp((t-21.6)/1.4,0,1)*0.55);   // dim the brain so the title reads
   scrim.style.opacity=sc.toFixed(3);
   // query types out, then the cited answer slides in
-  qbar.classList.toggle('show', t>=14.0&&t<22.6);
-  const qp=clamp((t-14.4)/1.9,0,1); qtext.textContent=QUESTION.slice(0,Math.round(qp*QUESTION.length));
-  answer.classList.toggle('show', t>=16.7&&t<22.8);
+  qbar.classList.toggle('show', t>=14.0&&t<19.6);
+  const qp=clamp((t-14.3)/1.2,0,1); qtext.textContent=QUESTION.slice(0,Math.round(qp*QUESTION.length));
+  answer.classList.toggle('show', t>=15.7&&t<19.7);
 
   for(const cp of caps){const a=+cp.dataset.in,b=+cp.dataset.out;cp.classList.toggle('show',t>=a&&t<b);}
   endEl.classList.toggle('show', t>=DUR+0.3);
