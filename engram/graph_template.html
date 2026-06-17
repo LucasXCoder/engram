@@ -113,8 +113,6 @@
   #controls button.on{color:var(--ink-bright);background:rgba(255,255,255,.08);border-color:var(--line-2)}
   #controls button:hover{color:var(--ink-bright)}
   #controls .sep{width:1px;height:18px;background:var(--line);margin:0 4px}
-  #mini{position:fixed;right:16px;bottom:54px;z-index:6;width:172px;height:118px;border-radius:10px;
-    border:1px solid var(--line);background:rgba(8,10,22,.66);cursor:crosshair;backdrop-filter:blur(8px)}
 
   @media (prefers-reduced-motion: reduce){
     .dot,.spinner{animation:none}
@@ -122,7 +120,6 @@
   }
   @media (max-width:820px){
     #topbar{max-width:calc(100vw - 32px)}
-    #mini{display:none}
   }
   @media (max-width:680px){
     #legend{max-width:150px;padding:8px}#legend .ct{display:none}
@@ -167,8 +164,6 @@
   <div class="sep"></div>
   <button id="exportBtn" title="Download a PNG of the current view">⤓ PNG</button>
 </div>
-
-<canvas id="mini" class="glass" title="Overview — click to jump"></canvas>
 
 <div id="hint">
   <kbd>/</kbd> search · <kbd>F</kbd> fit · <kbd>Esc</kbd> close · drag a node · scroll to zoom
@@ -364,41 +359,6 @@ function draw(){
       ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(sx(n.x),sy(n.y), r+3, 0, 7); ctx.stroke();
     }
   }
-  drawMini();
-}
-
-// ---- minimap: whole-graph overview + current viewport rectangle ----
-const mini = $('mini'), mctx = mini ? mini.getContext('2d') : null;
-let MW = 172, MH = 118;
-function miniSize(){ if(!mini) return; mini.width = MW*DPR; mini.height = MH*DPR;
-  mctx.setTransform(DPR,0,0,DPR,0,0); }
-miniSize();
-let miniBounds = null;
-function drawMini(){
-  if (!mctx || !N.length) return;
-  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
-  for (const n of N){ if(n.x<x0)x0=n.x; if(n.y<y0)y0=n.y; if(n.x>x1)x1=n.x; if(n.y>y1)y1=n.y; }
-  const pad=10, sw=(x1-x0)||1, sh=(y1-y0)||1, k=Math.min((MW-pad*2)/sw,(MH-pad*2)/sh);
-  const ox2=(MW-sw*k)/2-x0*k, oy2=(MH-sh*k)/2-y0*k;
-  miniBounds={k,ox2,oy2};
-  mctx.clearRect(0,0,MW,MH);
-  for (const n of N){ if(n.dim) continue;
-    mctx.fillStyle=DATA.colors[n.t]||'#888';
-    mctx.fillRect(n.x*k+ox2-0.6, n.y*k+oy2-0.6, 1.6, 1.6); }
-  // viewport rectangle (world region currently on screen)
-  const vx=wx(0)*k+ox2, vy=wy(0)*k+oy2, vw=(wx(W)-wx(0))*k, vh=(wy(H)-wy(0))*k;
-  mctx.strokeStyle='rgba(255,255,255,.7)'; mctx.lineWidth=1;
-  mctx.strokeRect(vx,vy,vw,vh);
-}
-if (mini){
-  mini.addEventListener('pointerdown', e => {
-    if (!miniBounds) return;
-    const r = mini.getBoundingClientRect();
-    const wxp=(e.clientX-r.left-miniBounds.ox2)/miniBounds.k;
-    const wyp=(e.clientY-r.top-miniBounds.oy2)/miniBounds.k;
-    ox = W/2 - wxp*scale; oy = H/2 - wyp*scale;   // center the clicked world point
-    if(!running) draw();
-  });
 }
 
 // ---- PNG export of the current canvas view ----
