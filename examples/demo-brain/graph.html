@@ -333,7 +333,7 @@ function draw(){
       ctx.moveTo(sx(a.x),sy(a.y)); ctx.lineTo(sx(b.x),sy(b.y));
       labels.push([(sx(a.x)+sx(b.x))/2, (sy(a.y)+sy(b.y))/2, relWord[e.r]||e.r]); } }
     ctx.stroke();
-    if (scale > 0.45){
+    if (scale > 1.4){   // only label edges once the user has zoomed in past the default fit
       ctx.font = '10px -apple-system,Segoe UI,sans-serif'; ctx.textAlign = 'center';
       for (const [mx,my,word] of labels){
         const w = ctx.measureText(word).width + 8;
