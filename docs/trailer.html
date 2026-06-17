@@ -54,12 +54,13 @@
 
   /* end card — CRISP title */
   #end{position:fixed;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:22px;opacity:0;transition:opacity 1s ease;pointer-events:none;
-    background:radial-gradient(62% 60% at 50% 48%,rgba(3,4,10,.92) 0%,rgba(3,4,10,.6) 52%,transparent 88%)}
+    gap:26px;padding:6vh 20px;opacity:0;transition:opacity 1s ease;pointer-events:none;
+    background:radial-gradient(62% 62% at 50% 48%,rgba(3,4,10,.92) 0%,rgba(3,4,10,.6) 52%,transparent 88%)}
   #end.show{opacity:1;pointer-events:auto}
-  #end .mark{font-size:clamp(66px,15vw,190px);font-weight:900;letter-spacing:-7px;color:#fff;line-height:.85;
-    text-shadow:0 0 34px rgba(110,168,255,.55),0 0 90px rgba(110,168,255,.28),0 3px 6px rgba(0,0,0,.5);
-    transform:scale(.92);transition:transform 1.1s cubic-bezier(.16,1,.3,1)}
+  #end .mark{font-size:clamp(54px,11vw,132px);font-weight:900;letter-spacing:-4px;color:#fff;line-height:1.04;
+    padding-bottom:.08em;margin-bottom:2px;
+    text-shadow:0 0 30px rgba(110,168,255,.5),0 0 80px rgba(110,168,255,.26),0 3px 6px rgba(0,0,0,.5);
+    transform:scale(.93);transition:transform 1.1s cubic-bezier(.16,1,.3,1)}
   #end.show .mark{transform:scale(1)}
   #end .tag{color:var(--ink);font-size:clamp(16px,2.7vw,25px);font-weight:600;text-align:center;max-width:90vw;
     text-shadow:0 2px 24px rgba(0,0,0,.8)}
@@ -79,6 +80,7 @@
     border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:7px 13px;cursor:pointer}
   #ctl button:hover{color:var(--ink);background:rgba(255,255,255,.12)}
   body.clean #ctl, body.clean #bar{display:none}
+  body.frozen #end, body.frozen .cap, body.frozen #qbar, body.frozen #answer{transition:none}
 </style>
 </head>
 <body>
@@ -87,11 +89,11 @@
 <div id="vig"></div>
 
 <div id="caps">
-  <div class="cap mid" data-in="0.7" data-out="3.0"><div class="line"></div><div class="big">Every creator is a mind.</div></div>
-  <div class="cap" data-in="6.4" data-out="9.7"><div class="line"></div><div class="big">Engram learns their entire channel.</div></div>
-  <div class="cap" data-in="10.4" data-out="13.6"><div class="line"></div><div class="big">Every idea an <span class="accent">atom</span>. Every argument an <span class="accent">edge</span>.</div></div>
-  <div class="cap" data-in="14.2" data-out="16.6"><div class="big">Then just <span class="accent">ask</span>.</div></div>
-  <div class="cap" data-in="22.4" data-out="25.2"><div class="big">Cited to the source. <span class="accent">Never faked.</span></div></div>
+  <div class="cap mid" data-in="0.7" data-out="3.0"><div class="line"></div><div class="big">Your favorite creator has <span class="accent">hundreds of videos</span>.</div></div>
+  <div class="cap" data-in="6.2" data-out="9.7"><div class="line"></div><div class="big">Engram reads every one — and maps how their ideas connect.</div></div>
+  <div class="cap" data-in="10.4" data-out="13.6"><div class="line"></div><div class="big">Into one searchable map of <span class="accent">everything they think</span>.</div></div>
+  <div class="cap" data-in="14.2" data-out="16.6"><div class="big">So you can just <span class="accent">ask</span> — in plain English.</div></div>
+  <div class="cap" data-in="22.4" data-out="25.2"><div class="big">Answered in their words — <span class="accent">cited to the exact video</span>.</div></div>
 </div>
 
 <div id="demo">
@@ -180,7 +182,7 @@ const qbar=document.getElementById('qbar'),qtext=document.getElementById('qtext'
 const QUESTION="what's the secret to shipping?";
 let t0=performance.now();
 const _at=parseFloat(new URLSearchParams(location.hash.slice(1)).get('at')??new URLSearchParams(location.search).get('at'));
-const FROZEN=isFinite(_at); if(FROZEN)t0=performance.now()-_at*1000;
+const FROZEN=isFinite(_at); if(FROZEN){t0=performance.now()-_at*1000;document.body.classList.add('frozen');}
 if(/(^|[?#&])clean\b/.test(location.search+location.hash))document.body.classList.add('clean');
 
 const proj=new Array(NODES.length);
