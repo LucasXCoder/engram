@@ -81,6 +81,10 @@
   #ctl button:hover{color:var(--ink);background:rgba(255,255,255,.12)}
   body.clean #ctl, body.clean #bar{display:none}
   body.frozen #end, body.frozen .cap, body.frozen #qbar, body.frozen #answer{transition:none}
+  /* vertical / 9:16 layout — captions drop to the lower third under the (raised) brain */
+  body.vert .cap:not(.mid){top:auto;bottom:15%}
+  body.vert .cap .big{font-size:clamp(30px,6.6vw,56px)}
+  body.vert #demo{top:46%}
 </style>
 </head>
 <body>
@@ -124,8 +128,11 @@ const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 const scene=document.createElement('canvas'), sctx=scene.getContext('2d');
 const bloom=document.createElement('canvas'), bctx=bloom.getContext('2d');
 const DPR=Math.min(devicePixelRatio||1,2);
-let W,H;
+let W,H,VERT=false;
+const FORCE_VERT=/(^|[?#&])vertical\b/.test(location.search+location.hash);
 function size(){W=innerWidth;H=innerHeight;
+  VERT = FORCE_VERT || H>W*1.1;                 // portrait screen (or #vertical) → 9:16 composition
+  document.body.classList.toggle('vert',VERT);
   for(const c of[cv,scene]){c.width=W*DPR;c.height=H*DPR;}
   cv.style.width=scene.style.width=W+'px';cv.style.height=scene.style.height=H+'px';
   ctx.setTransform(DPR,0,0,DPR,0,0);sctx.setTransform(DPR,0,0,DPR,0,0);
@@ -167,12 +174,15 @@ const CAM=[
 ];
 function cam(t){let i=0;while(i<CAM.length-1&&t>=CAM[i+1].t)i++;const A=CAM[i],B=CAM[Math.min(i+1,CAM.length-1)];
   const k=easeIO((t-A.t)/((B.t-A.t)||1));
-  return {dist:lerp(A.dist,B.dist,k),yaw:lerp(A.yaw,B.yaw,k),pitch:lerp(A.pitch,B.pitch,k),tx:lerp(A.tx,B.tx,k),ty:lerp(A.ty,B.ty,k),tz:lerp(A.tz,B.tz,k)};}
+  const o={dist:lerp(A.dist,B.dist,k),yaw:lerp(A.yaw,B.yaw,k),pitch:lerp(A.pitch,B.pitch,k),tx:lerp(A.tx,B.tx,k),ty:lerp(A.ty,B.ty,k),tz:lerp(A.tz,B.tz,k)};
+  if(VERT) o.dist*=0.72;   // zoom in so the brain fills the tall 9:16 frame
+  return o;}
 const F=860; let SHX=0,SHY=0;
 function project(x,y,z,c){x-=c.tx;y-=c.ty;z-=c.tz;
   const cy=Math.cos(c.yaw),sy=Math.sin(c.yaw);let x1=x*cy-z*sy,z1=x*sy+z*cy;
   const cp=Math.cos(c.pitch),sp=Math.sin(c.pitch);let y1=y*cp-z1*sp,z2=y*sp+z1*cp;
-  const zc=z2+c.dist;if(zc<1)return null;const s=F/zc;return {sx:W/2+SHX+x1*s,sy:H/2+SHY+y1*s,depth:zc,s};}
+  const zc=z2+c.dist;if(zc<1)return null;const s=F/zc;
+  return {sx:W/2+SHX+x1*s,sy:(VERT?H*0.40:H/2)+SHY+y1*s,depth:zc,s};}  // brain sits higher in vertical
 function npos(n,t){const e=easeOut((t-3)/3.2);
   return [lerp(n.ox,n.tx,e)+Math.sin(t*n.sp+n.ph)*3,lerp(n.oy,n.ty,e)+Math.cos(t*n.sp*.9+n.ph)*3,lerp(n.oz,n.tz,e)+Math.sin(t*n.sp*.7+n.ph)*3];}
 
