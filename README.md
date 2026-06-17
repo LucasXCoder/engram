@@ -77,7 +77,7 @@ scanned 17 atoms — 0 near a negation/attribution cue without a verbatim anchor
 (a JS runtime such as `deno`/`node` and `ffmpeg` are recommended for current YouTube extraction).
 
 ```bash
-git clone https://github.com/<you>/engram.git
+git clone https://github.com/LucasXCoder/engram.git
 cd engram
 pip install -r requirements.txt
 
