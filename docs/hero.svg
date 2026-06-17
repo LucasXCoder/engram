@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" font-family="-apple-system,Segoe UI,Inter,sans-serif">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="120%">
+      <stop offset="0%" stop-color="#0c1124"/><stop offset="55%" stop-color="#07080f"/>
+      <stop offset="100%" stop-color="#05060c"/>
+    </radialGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .e{stroke-opacity:.28}
+      .lbl{fill:#8b91a7;font-size:12px}
+      .node{filter:url(#glow)}
+    </style>
+  </defs>
+  <rect width="1200" height="420" fill="url(#bg)"/>
+
+  <!-- edges -->
+  <g stroke-width="1.4" fill="none">
+    <path class="e" stroke="#4da3ff" d="M250 150 L355 110"/>
+    <path class="e" stroke="#4da3ff" d="M250 150 L300 235"/>
+    <path class="e" stroke="#4da3ff" d="M355 110 L300 235"/>
+    <path class="e" stroke="#3ddc97" d="M300 235 L430 290"/>
+    <path class="e" stroke="#3ddc97" d="M430 290 L520 230"/>
+    <path class="e" stroke="#3ddc97" d="M430 290 L470 360"/>
+    <path class="e" stroke="#ff9f43" d="M520 230 L640 180"/>
+    <path class="e" stroke="#ff9f43" d="M640 180 L735 235"/>
+    <path class="e" stroke="#ff9f43" d="M640 180 L600 110"/>
+    <path class="e" stroke="#c792ea" d="M735 235 L830 175"/>
+    <path class="e" stroke="#c792ea" d="M830 175 L905 250"/>
+    <path class="e" stroke="#c792ea" d="M830 175 L880 100"/>
+    <path class="e" stroke="#4da3ff" d="M355 110 L600 110"/>
+    <path class="e" stroke="#3ddc97" d="M520 230 L470 360"/>
+    <path class="e" stroke="#ff9f43" d="M735 235 L905 250"/>
+  </g>
+
+  <!-- nodes -->
+  <g class="node">
+    <circle cx="250" cy="150" r="9" fill="#4da3ff"/>
+    <circle cx="355" cy="110" r="6" fill="#4da3ff"/>
+    <circle cx="300" cy="235" r="7" fill="#4da3ff"/>
+    <circle cx="430" cy="290" r="10" fill="#3ddc97"/>
+    <circle cx="520" cy="230" r="6" fill="#3ddc97"/>
+    <circle cx="470" cy="360" r="5" fill="#3ddc97"/>
+    <circle cx="640" cy="180" r="11" fill="#ff9f43"/>
+    <circle cx="600" cy="110" r="5" fill="#ff9f43"/>
+    <circle cx="735" cy="235" r="7" fill="#ff9f43"/>
+    <circle cx="830" cy="175" r="9" fill="#c792ea"/>
+    <circle cx="905" cy="250" r="6" fill="#c792ea"/>
+    <circle cx="880" cy="100" r="5" fill="#c792ea"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="1000" y="150" fill="#f4f6fc" font-size="64" font-weight="700" letter-spacing="-1">engram</text>
+  <text x="1002" y="186" fill="#8b91a7" font-size="17">a creator's mind,</text>
+  <text x="1002" y="210" fill="#8b91a7" font-size="17">as a queryable graph</text>
+
+  <!-- topic chips -->
+  <g class="lbl">
+    <circle cx="60" cy="372" r="5" fill="#4da3ff"/><text x="74" y="376">philosophy</text>
+    <circle cx="190" cy="372" r="5" fill="#3ddc97"/><text x="204" y="376">methods</text>
+    <circle cx="300" cy="372" r="5" fill="#ff9f43"/><text x="314" y="376">tools</text>
+    <circle cx="392" cy="372" r="5" fill="#c792ea"/><text x="406" y="376">audits</text>
+  </g>
+</svg>

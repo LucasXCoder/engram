@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "engram-brain"
+version = "0.1.0"
+description = "Turn a creator's public output into a queryable knowledge-graph 'brain'."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+keywords = ["knowledge-graph", "youtube", "transcripts", "claude", "skill", "rag"]
+dependencies = ["yt-dlp>=2024.1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+engram = "engram.__main__:cli"
+
+[project.urls]
+Homepage = "https://github.com/lucasjackson/engram"
+Issues = "https://github.com/lucasjackson/engram/issues"
+
+[tool.setuptools]
+packages = ["engram"]
+
+[tool.setuptools.package-data]
+engram = ["graph_template.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

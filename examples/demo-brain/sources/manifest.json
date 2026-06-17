@@ -1,0 +1,23 @@
+{
+  "creator": "Ada Mercer (fictional indie maker)",
+  "channel": "https://www.youtube.com/@example",
+  "note": "Fictional creator. Transcripts are invented for demonstration — no real person or copyrighted material.",
+  "fetched": "2026-06-16",
+  "counts": { "total": 2, "transcript": 2, "missed": 0 },
+  "items": [
+    {
+      "id": "ada-shipping",
+      "type": "video",
+      "title": "The Only Shipping Advice That Actually Works",
+      "url": "https://example.com/ada/shipping",
+      "coverage": "transcript"
+    },
+    {
+      "id": "ada-focus",
+      "type": "video",
+      "title": "Your Tool Stack Is Not Making You Fast",
+      "url": "https://example.com/ada/focus",
+      "coverage": "transcript"
+    }
+  ]
+}

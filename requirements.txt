@@ -1,0 +1,3 @@
+# Runtime dependency for fetching transcripts (python -m engram fetch).
+# The graph, audits, build, and distillation tooling use only the standard library.
+yt-dlp>=2024.1.0

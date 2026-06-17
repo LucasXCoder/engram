@@ -1,0 +1,17 @@
+{"from": "sh2", "to": "sh1", "rel": "supports"}
+{"from": "sh3", "to": "sh2", "rel": "contradicts", "note": "the belief vs the method that works"}
+{"from": "sh4", "to": "sh3", "rel": "contradicts", "note": "Ada's rebuttal of the big-launch belief"}
+{"from": "sh4", "to": "sh2", "rel": "supports"}
+{"from": "sh6", "to": "sh7", "rel": "contrast"}
+{"from": "sh7", "to": "sh2", "rel": "generalizes"}
+{"from": "sh8", "to": "sh7", "rel": "because"}
+{"from": "sh5", "to": "sh4", "rel": "example-of"}
+{"from": "fo2", "to": "fo1", "rel": "evidence-for"}
+{"from": "fo3", "to": "fo1", "rel": "supports"}
+{"from": "fo4", "to": "fo1", "rel": "contradicts"}
+{"from": "fo5", "to": "fo4", "rel": "contradicts", "note": "Ada's rebuttal of the more-tools myth"}
+{"from": "fo6", "to": "fo7", "rel": "example-of"}
+{"from": "fo7", "to": "fo1", "rel": "because"}
+{"from": "fo8", "to": "fo7", "rel": "qualifies"}
+{"from": "fo9", "to": "fo1", "rel": "generalizes"}
+{"from": "fo6", "to": "fo3", "rel": "because"}
