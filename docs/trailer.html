@@ -138,23 +138,16 @@ const CAM=[
 ];
 function cam(t){let i=0;while(i<CAM.length-1&&t>=CAM[i+1].t)i++;const A=CAM[i],B=CAM[Math.min(i+1,CAM.length-1)];
   const k=easeIO((t-A.t)/((B.t-A.t)||1));
-  const o={dist:lerp(A.dist,B.dist,k),yaw:lerp(A.yaw,B.yaw,k),pitch:lerp(A.pitch,B.pitch,k),
-          tx:lerp(A.tx,B.tx,k),ty:lerp(A.ty,B.ty,k),tz:lerp(A.tz,B.tz,k)};
-  // never dead-still — gentle continuous drift so the camera always breathes
-  o.yaw+=Math.sin(t*0.25)*0.05; o.pitch+=Math.sin(t*0.4+1)*0.03; o.dist*=1+Math.sin(t*0.5)*0.02;
-  return o;}
+  return {dist:lerp(A.dist,B.dist,k),yaw:lerp(A.yaw,B.yaw,k),pitch:lerp(A.pitch,B.pitch,k),
+          tx:lerp(A.tx,B.tx,k),ty:lerp(A.ty,B.ty,k),tz:lerp(A.tz,B.tz,k)};}
 const F=860;
 let SHX=0, SHY=0;   // camera shake offset (set per frame from impact intensity)
 function project(x,y,z,c){x-=c.tx;y-=c.ty;z-=c.tz;
   const cy=Math.cos(c.yaw),sy=Math.sin(c.yaw);let x1=x*cy-z*sy,z1=x*sy+z*cy;
   const cp=Math.cos(c.pitch),sp=Math.sin(c.pitch);let y1=y*cp-z1*sp,z2=y*sp+z1*cp;
   const zc=z2+c.dist;if(zc<1)return null;const s=F/zc;return {sx:W/2+SHX+x1*s,sy:H/2+SHY+y1*s,depth:zc,s};}
-function npos(n,t){
-  const e=easeOut((t-3)/3.2), breathe=1+Math.sin(t*0.9)*0.05;          // the whole brain breathes
-  let x=lerp(n.ox,n.tx,e)*breathe, y=lerp(n.oy,n.ty,e)*breathe, z=lerp(n.oz,n.tz,e)*breathe;
-  const ang=t*0.24, ca=Math.cos(ang), sa=Math.sin(ang);                // continuous self-rotation
-  const x2=x*ca - z*sa, z2=x*sa + z*ca;
-  return [x2+Math.sin(t*n.sp+n.ph)*7, y+Math.cos(t*n.sp*0.9+n.ph)*7, z2+Math.sin(t*n.sp*0.7+n.ph)*7];}
+function npos(n,t){const e=easeOut((t-3)/3.2);
+  return [lerp(n.ox,n.tx,e)+Math.sin(t*n.sp+n.ph)*3,lerp(n.oy,n.ty,e)+Math.cos(t*n.sp*.9+n.ph)*3,lerp(n.oz,n.tz,e)+Math.sin(t*n.sp*.7+n.ph)*3];}
 
 const caps=[...document.querySelectorAll('.cap')];
 const endEl=document.getElementById('end'),bar=document.getElementById('bar'),flash=document.getElementById('flash');
@@ -183,7 +176,7 @@ function frame(now){
   // --- SCENE LAYER (transparent, persistent → motion trails) ---
   sctx.globalCompositeOperation='destination-out';
   sctx.globalAlpha=1; sctx.fillStyle='#000';
-  sctx.fillStyle='rgba(0,0,0,'+(dive?0.15:0.26)+')'; sctx.fillRect(0,0,W,H);
+  sctx.fillStyle='rgba(0,0,0,'+(dive?0.18:0.34)+')'; sctx.fillRect(0,0,W,H);
   sctx.globalCompositeOperation='lighter';
 
   for(let i=0;i<NODES.length;i++){const q=npos(NODES[i],t);proj[i]=project(q[0],q[1],q[2],c);}
@@ -195,7 +188,7 @@ function frame(now){
     sctx.strokeStyle=NODES[e.a].c+Math.round(clamp(fog*0.30,0,1)*255).toString(16).padStart(2,'0');
     sctx.lineWidth=Math.max(.3,fog*0.9);
     sctx.beginPath();sctx.moveTo(A.sx,A.sy);sctx.lineTo(B.sx,B.sy);sctx.stroke();
-    if(fog>0.22){const u=(t*0.55+e.ph)%1,px=lerp(A.sx,B.sx,u),py=lerp(A.sy,B.sy,u),pr=Math.max(.7,lerp(A.s,B.s,u)*1.4)*fog;
+    if(fog>0.22){const u=(t*0.34+e.ph)%1,px=lerp(A.sx,B.sx,u),py=lerp(A.sy,B.sy,u),pr=Math.max(.7,lerp(A.s,B.s,u)*1.4)*fog;
       sctx.fillStyle='rgba(200,230,255,'+(fog*0.8).toFixed(2)+')';
       sctx.beginPath();sctx.arc(px,py,pr,0,7);sctx.fill();}}
 
@@ -211,8 +204,7 @@ function frame(now){
   // nodes (depth sorted; bright cores)
   const order=[...proj.keys()].filter(i=>proj[i]).sort((a,b)=>proj[b].depth-proj[a].depth);
   for(const i of order){const P=proj[i],n=NODES[i],fog=clamp(1600/P.depth,0,1.2),r=Math.max(.7,n.r*P.s*1.15);
-    const tw=0.62+0.38*Math.sin(t*2.4*n.sp+n.ph);   // each node twinkles — alive, shimmering
-    sctx.fillStyle=n.c; sctx.globalAlpha=clamp(fog*tw,0,1);
+    sctx.fillStyle=n.c; sctx.globalAlpha=clamp(fog,0,1);
     sctx.beginPath();sctx.arc(P.sx,P.sy,r,0,7);sctx.fill();}
   sctx.globalAlpha=1;
 
