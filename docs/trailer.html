@@ -98,19 +98,28 @@ const rnd=(a,b)=>a+Math.random()*(b-a), clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const easeIO=t=>{t=clamp(t,0,1);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;};
 const easeOut=t=>1-Math.pow(1-clamp(t,0,1),3), lerp=(a,b,t)=>a+(b-a)*t;
 
-// ---- 3D clustered brain ----
-const NODES=[], EDGES=[], R=440;
-const lobes=COLORS.map((c,i)=>{const a=-Math.PI/2+i*2*Math.PI/5,tl=(i%2?1:-1);
-  return {c,cx:R*Math.cos(a),cy:R*Math.sin(a)*0.6,cz:tl*R*0.5*Math.sin(a*1.3)};});
-lobes.forEach((L,li)=>{const n=58+(li%2?12:0);
-  for(let k=0;k<n;k++){const u=Math.random()*6.283,v=Math.acos(2*Math.random()-1),rr=Math.pow(Math.random(),.6)*120;
-    NODES.push({li,c:L.c,tx:L.cx+rr*Math.sin(v)*Math.cos(u),ty:L.cy+rr*Math.sin(v)*Math.sin(u),tz:L.cz+rr*Math.cos(v),
-      ox:rnd(-22,22),oy:rnd(-22,22),oz:rnd(-22,22),r:rnd(1.7,3.8)+(Math.random()<.1?rnd(2.5,5.5):0),
-      ph:Math.random()*6.28,sp:rnd(.5,1.2)});}});
-function near(i,same,c){const a=NODES[i];return NODES.map((b,j)=>({j,d:(b.tx-a.tx)**2+(b.ty-a.ty)**2+(b.tz-a.tz)**2,ok:same?b.li===a.li:b.li!==a.li})).filter(o=>o.ok&&o.j!==i).sort((x,y)=>x.d-y.d).slice(0,c).map(o=>o.j);}
+// ---- ONE dense brain: a packed ellipsoidal cloud, colour-regioned but cohesive ----
+const NODES=[], EDGES=[];
+// region centres live INSIDE the ellipsoid and overlap, so colours blend into one mass
+const RC=COLORS.map((c,i)=>{const a=-Math.PI/2+i*2*Math.PI/5;
+  return {c,x:Math.cos(a)*215,y:Math.sin(a)*120,z:Math.sin(a*1.7)*150};});
+const NT=640;
+for(let k=0;k<NT;k++){
+  // sample inside an ellipsoid, denser toward the centre (a brain-like blob)
+  const u=Math.random()*6.283, v=Math.acos(2*Math.random()-1), rr=Math.pow(Math.random(),0.5);
+  const x=rr*Math.sin(v)*Math.cos(u)*430, y=rr*Math.sin(v)*Math.sin(u)*300, z=rr*Math.cos(v)*330;
+  let best=0,bd=1e9; for(let ri=0;ri<RC.length;ri++){const d=(RC[ri].x-x)**2+(RC[ri].y-y)**2+(RC[ri].z-z)**2;if(d<bd){bd=d;best=ri;}}
+  NODES.push({li:best,c:RC[best].c,tx:x,ty:y,tz:z,
+    ox:rnd(-18,18),oy:rnd(-18,18),oz:rnd(-18,18),
+    r:rnd(1.2,2.8)+(Math.random()<.07?rnd(2,4.5):0),ph:Math.random()*6.28,sp:rnd(.5,1.2)});
+}
+// dense web: connect every node to its 3 nearest (ANY region) so the whole brain is one network
+function nearAny(i,count){const a=NODES[i];
+  return NODES.map((b,j)=>({j,d:(b.tx-a.tx)**2+(b.ty-a.ty)**2+(b.tz-a.tz)**2}))
+    .filter(o=>o.j!==i).sort((x,y)=>x.d-y.d).slice(0,count).map(o=>o.j);}
 const seen=new Set();
-NODES.forEach((a,i)=>near(i,true,2).forEach(j=>{const k=i<j?i+'_'+j:j+'_'+i;if(!seen.has(k)){seen.add(k);EDGES.push({a:i,b:j,ph:Math.random()});}}));
-for(let i=0;i<NODES.length;i+=8){const br=near(i,false,1)[0];if(br!=null){const k=i+'_'+br;if(!seen.has(k)){seen.add(k);EDGES.push({a:i,b:br,ph:Math.random()});}}}
+NODES.forEach((a,i)=>nearAny(i,3).forEach(j=>{const k=i<j?i+'_'+j:j+'_'+i;
+  if(!seen.has(k)){seen.add(k);EDGES.push({a:i,b:j,ph:Math.random()});}}));
 const DUST=[]; for(let i=0;i<320;i++) DUST.push({x:rnd(-1800,1800),y:rnd(-1100,1100),z:rnd(-1600,1600),r:rnd(.4,1.5)});
 
 // ---- camera ----
@@ -144,7 +153,8 @@ const caps=[...document.querySelectorAll('.cap')];
 const endEl=document.getElementById('end'),bar=document.getElementById('bar'),flash=document.getElementById('flash');
 let t0=performance.now();
 const _at=parseFloat(new URLSearchParams(location.hash.slice(1)).get('at')??new URLSearchParams(location.search).get('at'));
-if(isFinite(_at))t0=performance.now()-_at*1000;
+const FROZEN=isFinite(_at);              // ?at=/#at= freezes on that exact second (thumbnails/verify)
+if(FROZEN)t0=performance.now()-_at*1000;
 if(/(^|[?#&])clean\b/.test(location.search+location.hash))document.body.classList.add('clean');
 
 let gf=0;
@@ -153,7 +163,7 @@ function drawGrain(){const gw=grain.width,gh=grain.height,img=gctx.createImageDa
 
 const proj=new Array(NODES.length);
 function frame(now){
-  let t=(now-t0)/1000; if(REDUCE) t=DUR+5;
+  let t=(now-t0)/1000; if(REDUCE) t=DUR+5; if(FROZEN) t=_at;
   const c=cam(t), dive=t>10.4&&t<15.3;
 
   // impact intensity → white flash + camera shake
@@ -174,12 +184,13 @@ function frame(now){
   // edges + pulses
   for(const e of EDGES){const A=proj[e.a],B=proj[e.b];if(!A||!B)continue;
     const dep=(A.depth+B.depth)/2,fog=clamp(1500/dep,0,1);
-    sctx.strokeStyle=NODES[e.a].c+Math.round(clamp(fog*0.32,0,1)*255).toString(16).padStart(2,'0');
-    sctx.lineWidth=Math.max(.35,fog*1.0);
+    if(fog<0.05)continue;   // skip far-away edges (perf on the denser web)
+    sctx.strokeStyle=NODES[e.a].c+Math.round(clamp(fog*0.30,0,1)*255).toString(16).padStart(2,'0');
+    sctx.lineWidth=Math.max(.3,fog*0.9);
     sctx.beginPath();sctx.moveTo(A.sx,A.sy);sctx.lineTo(B.sx,B.sy);sctx.stroke();
-    const u=(t*0.34+e.ph)%1,px=lerp(A.sx,B.sx,u),py=lerp(A.sy,B.sy,u),pr=Math.max(.7,lerp(A.s,B.s,u)*1.5)*fog;
-    sctx.fillStyle='rgba(200,230,255,'+(fog*0.85).toFixed(2)+')';
-    sctx.beginPath();sctx.arc(px,py,pr,0,7);sctx.fill();}
+    if(fog>0.22){const u=(t*0.34+e.ph)%1,px=lerp(A.sx,B.sx,u),py=lerp(A.sy,B.sy,u),pr=Math.max(.7,lerp(A.s,B.s,u)*1.4)*fog;
+      sctx.fillStyle='rgba(200,230,255,'+(fog*0.8).toFixed(2)+')';
+      sctx.beginPath();sctx.arc(px,py,pr,0,7);sctx.fill();}}
 
   // blooming seed core — a brilliant point that births the brain, fading after the explosion
   const C0=project(0,0,0,c);
