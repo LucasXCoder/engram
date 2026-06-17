@@ -194,7 +194,8 @@ function frame(now){
   SHX=(Math.random()*2-1)*fl*16; SHY=(Math.random()*2-1)*fl*16;
 
   sctx.globalCompositeOperation='destination-out';
-  sctx.fillStyle='rgba(0,0,0,'+(dive?0.16:0.30)+')'; sctx.fillRect(0,0,W,H);
+  // higher alpha = shorter trails = crisper. Keep the dive crisp (was over-blurred), light trails otherwise.
+  sctx.fillStyle='rgba(0,0,0,'+(dive?0.55:0.38)+')'; sctx.fillRect(0,0,W,H);
   sctx.globalCompositeOperation='lighter';
   for(let i=0;i<NODES.length;i++){const q=npos(NODES[i],t);proj[i]=project(q[0],q[1],q[2],c);}
   for(const e of EDGES){const A=proj[e.a],B=proj[e.b];if(!A||!B)continue;
@@ -228,7 +229,7 @@ function frame(now){
   bctx.drawImage(scene,0,0,scene.width,scene.height,0,0,bloom.width,bloom.height);bctx.filter='none';
   ctx.globalCompositeOperation='lighter';
   ctx.globalAlpha=0.85;ctx.drawImage(bloom,0,0,bloom.width,bloom.height,0,0,W,H);
-  ctx.globalAlpha=0.30;ctx.drawImage(bloom,0,0,bloom.width,bloom.height,-W*0.32,H*0.02,W*1.64,H*0.96);
+  ctx.globalAlpha=0.20;ctx.drawImage(bloom,0,0,bloom.width,bloom.height,-W*0.32,H*0.02,W*1.64,H*0.96);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
 
   flash.style.opacity=fl.toFixed(3);
