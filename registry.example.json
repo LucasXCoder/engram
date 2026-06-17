@@ -7,14 +7,14 @@
       "name": "demo-brain",
       "creator": "Ada Mercer (fictional indie maker)",
       "handle": "@example",
-      "domains": ["shipping software", "focus & tools"],
+      "domains": ["shipping", "focus", "debugging"],
       "path": "examples/demo-brain",
       "trigger": "/demo-brain",
-      "coverage": { "total": 2, "transcript": 2, "missed": 0 },
-      "atoms_count": 17,
-      "edges_count": 17,
+      "coverage": { "total": 3, "transcript": 3, "missed": 0 },
+      "atoms_count": 25,
+      "edges_count": 26,
       "built": "2026-06-16",
-      "last_updated": "2026-06-16"
+      "last_updated": "2026-06-17"
     }
   ]
 }

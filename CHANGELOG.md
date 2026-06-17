@@ -4,6 +4,16 @@ All notable changes to Engram are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Graph top-left overlap.** The centered search box could overlap the header on narrower
+  viewports. Header + search now share one left-anchored flex row that wraps instead of overlapping.
+
+### Changed
+- **Richer demo brain.** Added a third source (debugging) with cross-topic edges, so the bundled
+  showcase graph spans three connected topic clusters (25 atoms / 26 edges) instead of two.
+
 ## [0.1.1] — 2026-06-17
 
 Makes a built brain usable and maintainable straight from the CLI, plus a richer graph. Proven

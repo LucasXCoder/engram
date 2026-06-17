@@ -15,3 +15,12 @@
 {"from": "fo8", "to": "fo7", "rel": "qualifies"}
 {"from": "fo9", "to": "fo1", "rel": "generalizes"}
 {"from": "fo6", "to": "fo3", "rel": "because"}
+{"from": "db2", "to": "db1", "rel": "because"}
+{"from": "db8", "to": "db2", "rel": "analogy-for"}
+{"from": "db4", "to": "db3", "rel": "contrast"}
+{"from": "db4", "to": "db1", "rel": "part-of"}
+{"from": "db5", "to": "db4", "rel": "leads-to"}
+{"from": "db6", "to": "db4", "rel": "supports"}
+{"from": "db7", "to": "db1", "rel": "qualifies"}
+{"from": "db7", "to": "sh7", "rel": "supports", "note": "writing the regression test is the smallest feedback loop"}
+{"from": "db4", "to": "fo7", "rel": "depends-on", "note": "testing one hypothesis spends the focus budget well"}

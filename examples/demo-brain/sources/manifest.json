@@ -2,8 +2,8 @@
   "creator": "Ada Mercer (fictional indie maker)",
   "channel": "https://www.youtube.com/@example",
   "note": "Fictional creator. Transcripts are invented for demonstration — no real person or copyrighted material.",
-  "fetched": "2026-06-16",
-  "counts": { "total": 2, "transcript": 2, "missed": 0 },
+  "fetched": "2026-06-17",
+  "counts": { "total": 3, "transcript": 3, "missed": 0 },
   "items": [
     {
       "id": "ada-shipping",
@@ -17,6 +17,13 @@
       "type": "video",
       "title": "Your Tool Stack Is Not Making You Fast",
       "url": "https://example.com/ada/focus",
+      "coverage": "transcript"
+    },
+    {
+      "id": "ada-debugging",
+      "type": "video",
+      "title": "Debugging Is a Process of Elimination",
+      "url": "https://example.com/ada/debugging",
       "coverage": "transcript"
     }
   ]

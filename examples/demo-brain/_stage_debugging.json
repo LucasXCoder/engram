@@ -1,0 +1,23 @@
+{
+  "atoms": [
+    {"id":"db1","type":"claim","topic":"debugging","confidence":"CORE","sources":["ada-debugging"],"text":"Debugging is mostly a process of elimination, not a mystery.","verbatim":"it is mostly a process of elimination"},
+    {"id":"db2","type":"concept","topic":"debugging","confidence":"CORE","sources":["ada-debugging"],"text":"The bug lives between the input you trust and the output you don't; the job is to keep cutting that space in half."},
+    {"id":"db3","type":"warning","topic":"debugging","confidence":"STATED","sources":["ada-debugging"],"text":"Guessing feels fast, but a wrong guess costs you a change, a rerun, and a little of your confidence."},
+    {"id":"db4","type":"method","topic":"debugging","confidence":"CORE","sources":["ada-debugging"],"text":"Form one hypothesis you can actually test rather than spraying five changes and hoping one sticks."},
+    {"id":"db5","type":"claim","topic":"debugging","confidence":"CORE","sources":["ada-debugging"],"text":"The fastest debuggers read the entire error message before touching anything."},
+    {"id":"db6","type":"opinion","topic":"debugging","confidence":"STATED","sources":["ada-debugging"],"text":"Print statements aren't shameful: a print in the right place beats an hour in a fancy debugger in the wrong place.","verbatim":"a print in the right place beats an hour in a fancy debugger in the wrong place"},
+    {"id":"db7","type":"method","topic":"debugging","confidence":"CORE","sources":["ada-debugging"],"text":"When you find the bug, write the test that would have caught it, so it can never quietly come back."},
+    {"id":"db8","type":"analogy","topic":"debugging","confidence":"STATED","sources":["ada-debugging"],"text":"Debugging is like a binary search over the space between trusted input and wrong output — halve it each step."}
+  ],
+  "edges": [
+    {"from":"db2","to":"db1","rel":"because"},
+    {"from":"db8","to":"db2","rel":"analogy-for"},
+    {"from":"db4","to":"db3","rel":"contrast"},
+    {"from":"db4","to":"db1","rel":"part-of"},
+    {"from":"db5","to":"db4","rel":"leads-to"},
+    {"from":"db6","to":"db4","rel":"supports"},
+    {"from":"db7","to":"db1","rel":"qualifies"},
+    {"from":"db7","to":"sh7","rel":"supports","note":"writing the regression test is the smallest feedback loop"},
+    {"from":"db4","to":"fo7","rel":"depends-on","note":"testing one hypothesis spends the focus budget well"}
+  ]
+}

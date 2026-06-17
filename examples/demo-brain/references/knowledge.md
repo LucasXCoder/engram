@@ -2,7 +2,7 @@
 
 **Domain:** shipping software, focus & tooling discipline.
 **Sources:** 2 invented transcripts (this is a demo — Ada is fictional, no real person).
-**Atoms processed:** 17 across 2 sources · **Last updated:** 2026-06-16
+**Atoms processed:** 25 across 3 sources · **Last updated:** 2026-06-17
 
 > This brain is a worked example bundled with Engram. It shows the tiered layout, the atom/edge
 > graph, and the `attribution`/`verbatim` fidelity pattern on debunked beliefs.
@@ -13,6 +13,7 @@
 |---|---|
 | [`topics/shipping.md`](topics/shipping.md) | launching, batch size, iteration, polish vs. progress |
 | [`topics/focus.md`](topics/focus.md) | tools, tool-switching, attention, minimalism |
+| [`topics/debugging.md`](topics/debugging.md) | finding bugs, hypotheses, error messages, regression tests |
 
 ## 1. Core Philosophy
 

@@ -22,8 +22,10 @@
     border-radius:var(--radius);box-shadow:var(--shadow)}
   button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
 
-  /* ---- header ---- */
-  #hud{position:fixed;top:16px;left:16px;z-index:6;padding:12px 16px;max-width:min(46vw,420px)}
+  /* ---- top bar: header + search share one left-anchored flex row (never overlap) ---- */
+  #topbar{position:fixed;top:16px;left:16px;z-index:6;display:flex;flex-wrap:wrap;gap:10px;
+    align-items:center;max-width:calc(100vw - 270px)}
+  #hud{padding:12px 16px;flex:none}
   #hud .name{font-size:16px;font-weight:650;color:var(--ink-bright);letter-spacing:.2px;
     display:flex;align-items:center;gap:8px}
   #hud .name .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);
@@ -33,9 +35,9 @@
   #hud .meta b{color:var(--ink);font-weight:600}
 
   /* ---- search ---- */
-  #searchwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:6;
-    display:flex;align-items:center;gap:8px;padding:8px 12px;width:min(70vw,340px)}
-  #search{flex:1;background:none;border:none;outline:none;color:var(--ink-bright);font-size:13px}
+  #searchwrap{display:flex;align-items:center;gap:8px;padding:8px 12px;
+    flex:0 1 320px;min-width:170px}
+  #search{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--ink-bright);font-size:13px}
   #search::placeholder{color:var(--ink-dim)}
   #searchwrap svg{flex:none;opacity:.5}
   #searchcount{color:var(--ink-dim);font-size:11px;font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
@@ -118,26 +120,31 @@
     .dot,.spinner{animation:none}
     #detail{transition:opacity .2s}
   }
+  @media (max-width:820px){
+    #topbar{max-width:calc(100vw - 32px)}
+    #mini{display:none}
+  }
   @media (max-width:680px){
     #legend{max-width:150px;padding:8px}#legend .ct{display:none}
-    #searchwrap{width:min(62vw,260px)}#hud{max-width:54vw}
     #hint{display:none}#detail{width:calc(100vw - 32px)}
+    #controls{bottom:12px}
   }
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
 
-<div id="hud" class="glass">
-  <div class="name"><span class="dot"></span><span id="bname">brain</span></div>
-  <div class="meta"><b id="cAtoms">0</b> atoms · <b id="cEdges">0</b> edges · <b id="cTopics">0</b> topics</div>
-</div>
-
-<div id="searchwrap" class="glass">
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-  <input id="search" placeholder="Search atoms…  ( / )" autocomplete="off" spellcheck="false">
-  <span id="searchcount"></span>
+<div id="topbar">
+  <div id="hud" class="glass">
+    <div class="name"><span class="dot"></span><span id="bname">brain</span></div>
+    <div class="meta"><b id="cAtoms">0</b> atoms · <b id="cEdges">0</b> edges · <b id="cTopics">0</b> topics</div>
+  </div>
+  <div id="searchwrap" class="glass">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="search" placeholder="Search atoms…  ( / )" autocomplete="off" spellcheck="false">
+    <span id="searchcount"></span>
+  </div>
 </div>
 
 <div id="legend" class="glass"></div>
