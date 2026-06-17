@@ -10,3 +10,6 @@ Thumbs.db
 _new_fetch/
 # personal brain fleet — registry.example.json is the template that ships
 registry.json
+
+# scratch render frames
+_*.png
