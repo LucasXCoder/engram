@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "engram-brain"
-version = "0.1.1"
+version = "0.1.2"
 description = "Turn a creator's public output into a queryable knowledge-graph 'brain'."
 readme = "README.md"
 license = { file = "LICENSE" }

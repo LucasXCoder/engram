@@ -4,14 +4,22 @@ All notable changes to Engram are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.2] — 2026-06-17
+
+Graph layout fixes and polish.
 
 ### Fixed
-- **Graph top-left overlap.** The centered search box could overlap the header on narrower
-  viewports. Header + search now share one left-anchored flex row that wraps instead of overlapping.
+- **Minimap overlapping the title.** The global `canvas { position:fixed; inset:0 }` rule (for the
+  fullscreen graph canvas) was also applying `top:0; left:0` to the minimap canvas, pinning it to
+  the top-left over the header. Scoped that rule to `#cv` and gave `#mini` complete bottom-right
+  positioning. Verified with a headless render.
 
 ### Changed
-- **Richer demo brain.** Added a third source (debugging) with cross-topic edges, so the bundled
+- **Search bar moved to top-center;** header sits top-left and hides its stats line on narrow
+  screens so the two never collide.
+- **Edge relationship labels** (because / example-of / …) now appear only when zoomed in past the
+  default fit (`scale > 1.4`), keeping the default view clean.
+- **Richer demo brain** — added a third source (debugging) with cross-topic edges, so the bundled
   showcase graph spans three connected topic clusters (25 atoms / 26 edges) instead of two.
 
 ## [0.1.1] — 2026-06-17
