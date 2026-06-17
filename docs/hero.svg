@@ -1,65 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" font-family="-apple-system,Segoe UI,Inter,sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="1200" height="440" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Inter,sans-serif">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="0%" r="120%">
-      <stop offset="0%" stop-color="#0c1124"/><stop offset="55%" stop-color="#07080f"/>
+    <radialGradient id="bg" cx="38%" cy="22%" r="95%">
+      <stop offset="0%" stop-color="#0e1430"/><stop offset="55%" stop-color="#080a16"/>
       <stop offset="100%" stop-color="#05060c"/>
     </radialGradient>
-    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
+    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#c7d0ea"/>
+    </linearGradient>
     <style>
-      .e{stroke-opacity:.28}
-      .lbl{fill:#8b91a7;font-size:12px}
-      .node{filter:url(#glow)}
+      .e{fill:none;stroke-opacity:.30;stroke-width:1.5}
+      .lbl{fill:#8b91a7;font-size:13px}
+      .nodes circle{filter:url(#glow)}
     </style>
   </defs>
-  <rect width="1200" height="420" fill="url(#bg)"/>
 
-  <!-- edges -->
-  <g stroke-width="1.4" fill="none">
-    <path class="e" stroke="#4da3ff" d="M250 150 L355 110"/>
-    <path class="e" stroke="#4da3ff" d="M250 150 L300 235"/>
-    <path class="e" stroke="#4da3ff" d="M355 110 L300 235"/>
-    <path class="e" stroke="#3ddc97" d="M300 235 L430 290"/>
-    <path class="e" stroke="#3ddc97" d="M430 290 L520 230"/>
-    <path class="e" stroke="#3ddc97" d="M430 290 L470 360"/>
-    <path class="e" stroke="#ff9f43" d="M520 230 L640 180"/>
-    <path class="e" stroke="#ff9f43" d="M640 180 L735 235"/>
-    <path class="e" stroke="#ff9f43" d="M640 180 L600 110"/>
-    <path class="e" stroke="#c792ea" d="M735 235 L830 175"/>
-    <path class="e" stroke="#c792ea" d="M830 175 L905 250"/>
-    <path class="e" stroke="#c792ea" d="M830 175 L880 100"/>
-    <path class="e" stroke="#4da3ff" d="M355 110 L600 110"/>
-    <path class="e" stroke="#3ddc97" d="M520 230 L470 360"/>
-    <path class="e" stroke="#ff9f43" d="M735 235 L905 250"/>
+  <rect width="1200" height="440" fill="url(#bg)"/>
+
+  <!-- knowledge graph (left ~55%), curved glowing edges across 5 topic clusters -->
+  <g class="e">
+    <path stroke="#4da3ff" d="M120 150 Q 200 120 250 96"/>
+    <path stroke="#4da3ff" d="M120 150 Q 170 210 230 248"/>
+    <path stroke="#4da3ff" d="M250 96 Q 320 150 230 248"/>
+    <path stroke="#4da3ff" d="M250 96 Q 420 90 470 130"/>
+    <path stroke="#3ddc97" d="M230 248 Q 300 300 360 320"/>
+    <path stroke="#3ddc97" d="M360 320 Q 440 300 470 248"/>
+    <path stroke="#3ddc97" d="M360 320 Q 360 380 410 392"/>
+    <path stroke="#3ddc97" d="M470 248 Q 430 320 410 392"/>
+    <path stroke="#ff9f43" d="M470 130 Q 540 150 560 210"/>
+    <path stroke="#ff9f43" d="M560 210 Q 620 180 470 248"/>
+    <path stroke="#ff9f43" d="M560 210 Q 600 130 640 120"/>
+    <path stroke="#c792ea" d="M640 120 Q 690 170 660 250"/>
+    <path stroke="#c792ea" d="M660 250 Q 720 250 700 320"/>
+    <path stroke="#ffd23f" d="M700 320 Q 620 340 560 210"/>
+    <path stroke="#4da3ff" d="M470 130 Q 360 110 250 96"/>
   </g>
 
-  <!-- nodes -->
-  <g class="node">
-    <circle cx="250" cy="150" r="9" fill="#4da3ff"/>
-    <circle cx="355" cy="110" r="6" fill="#4da3ff"/>
-    <circle cx="300" cy="235" r="7" fill="#4da3ff"/>
-    <circle cx="430" cy="290" r="10" fill="#3ddc97"/>
-    <circle cx="520" cy="230" r="6" fill="#3ddc97"/>
-    <circle cx="470" cy="360" r="5" fill="#3ddc97"/>
-    <circle cx="640" cy="180" r="11" fill="#ff9f43"/>
-    <circle cx="600" cy="110" r="5" fill="#ff9f43"/>
-    <circle cx="735" cy="235" r="7" fill="#ff9f43"/>
-    <circle cx="830" cy="175" r="9" fill="#c792ea"/>
-    <circle cx="905" cy="250" r="6" fill="#c792ea"/>
-    <circle cx="880" cy="100" r="5" fill="#c792ea"/>
+  <g class="nodes">
+    <circle cx="120" cy="150" r="11" fill="#4da3ff"/>
+    <circle cx="250" cy="96"  r="7"  fill="#4da3ff"/>
+    <circle cx="230" cy="248" r="9"  fill="#4da3ff"/>
+    <circle cx="470" cy="130" r="12" fill="#4da3ff"/>
+    <circle cx="360" cy="320" r="13" fill="#3ddc97"/>
+    <circle cx="470" cy="248" r="7"  fill="#3ddc97"/>
+    <circle cx="410" cy="392" r="6"  fill="#3ddc97"/>
+    <circle cx="560" cy="210" r="11" fill="#ff9f43"/>
+    <circle cx="640" cy="120" r="6"  fill="#ff9f43"/>
+    <circle cx="660" cy="250" r="9"  fill="#c792ea"/>
+    <circle cx="700" cy="320" r="7"  fill="#ffd23f"/>
   </g>
 
-  <!-- wordmark -->
-  <text x="1000" y="150" fill="#f4f6fc" font-size="64" font-weight="700" letter-spacing="-1">engram</text>
-  <text x="1002" y="186" fill="#8b91a7" font-size="17">a creator's mind,</text>
-  <text x="1002" y="210" fill="#8b91a7" font-size="17">as a queryable graph</text>
+  <!-- wordmark block, RIGHT-anchored so it can never clip the viewBox edge -->
+  <g text-anchor="end">
+    <text x="1150" y="200" fill="url(#ink)" font-size="92" font-weight="800" letter-spacing="-3">engram</text>
+    <text x="1150" y="244" fill="#aeb6cf" font-size="20" font-weight="500">A creator&#8217;s mind,</text>
+    <text x="1150" y="272" fill="#aeb6cf" font-size="20" font-weight="500">as a queryable graph.</text>
+    <text x="1150" y="316" fill="#5c6480" font-size="14" letter-spacing="2" font-weight="600">ATOMS &#183; EDGES &#183; CITATIONS</text>
+  </g>
 
-  <!-- topic chips -->
+  <!-- topic legend along the bottom -->
   <g class="lbl">
-    <circle cx="60" cy="372" r="5" fill="#4da3ff"/><text x="74" y="376">philosophy</text>
-    <circle cx="190" cy="372" r="5" fill="#3ddc97"/><text x="204" y="376">methods</text>
-    <circle cx="300" cy="372" r="5" fill="#ff9f43"/><text x="314" y="376">tools</text>
-    <circle cx="392" cy="372" r="5" fill="#c792ea"/><text x="406" y="376">audits</text>
+    <circle cx="72"  cy="412" r="5" fill="#4da3ff"/><text x="86"  y="416">philosophy</text>
+    <circle cx="208" cy="412" r="5" fill="#3ddc97"/><text x="222" y="416">methods</text>
+    <circle cx="320" cy="412" r="5" fill="#ff9f43"/><text x="334" y="416">tools</text>
+    <circle cx="408" cy="412" r="5" fill="#c792ea"/><text x="422" y="416">audits</text>
+    <circle cx="500" cy="412" r="5" fill="#ffd23f"/><text x="514" y="416">results</text>
   </g>
 </svg>
