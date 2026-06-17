@@ -16,7 +16,7 @@
     font:13px/1.5 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   body{background:radial-gradient(120% 120% at 50% -10%,#0c1124 0%,#07080f 55%,#05060c 100%)}
-  canvas{display:block;position:fixed;inset:0;touch-action:none}
+  #cv{display:block;position:fixed;inset:0;touch-action:none}   /* main graph canvas only — NOT #mini */
   .glass{background:var(--panel);backdrop-filter:blur(16px) saturate(140%);
     -webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--line);
     border-radius:var(--radius);box-shadow:var(--shadow)}
@@ -112,8 +112,9 @@
   #controls button.on{color:var(--ink-bright);background:rgba(255,255,255,.08);border-color:var(--line-2)}
   #controls button:hover{color:var(--ink-bright)}
   #controls .sep{width:1px;height:18px;background:var(--line);margin:0 4px}
-  /* minimap — positioning is set INLINE on the element so it can never fall out of place */
-  #mini{z-index:6;border-radius:10px;cursor:crosshair;background:rgba(8,10,22,.72)}
+  /* minimap — full positioning here (id selector beats the #cv rule); pinned bottom-right */
+  #mini{position:fixed;top:auto;left:auto;right:16px;bottom:58px;width:176px;height:116px;
+    z-index:6;border-radius:10px;cursor:crosshair;background:rgba(8,10,22,.72)}
 
   @media (prefers-reduced-motion: reduce){
     .dot,.spinner{animation:none}
@@ -166,7 +167,7 @@
   <button id="exportBtn" title="Download a PNG of the current view">⤓ PNG</button>
 </div>
 
-<canvas id="mini" class="glass" style="position:fixed;right:16px;bottom:58px;width:176px;height:116px" title="Overview — click to jump"></canvas>
+<canvas id="mini" class="glass" title="Overview — click to jump"></canvas>
 
 <div id="hint">
   <kbd>/</kbd> search · <kbd>F</kbd> fit · <kbd>Esc</kbd> close · drag a node · scroll to zoom
