@@ -102,6 +102,10 @@
   #empty h2{color:var(--ink-bright);margin:0;font-weight:600}
   #empty code{background:rgba(255,255,255,.07);padding:2px 7px;border-radius:6px;color:var(--ink)}
 
+  @media (prefers-reduced-motion: reduce){
+    .dot,.spinner{animation:none}
+    #detail{transition:opacity .2s}
+  }
   @media (max-width:680px){
     #legend{max-width:150px;padding:8px}#legend .ct{display:none}
     #searchwrap{width:min(62vw,260px)}#hud{max-width:54vw}
@@ -152,6 +156,8 @@
 
 <script>
 const DATA = {"name": "demo-brain", "nodes": [{"id": "sh1", "x": -896.1, "y": -114.7, "t": "shipping", "ty": "claim", "c": "CORE", "at": "creator", "r": 3.2, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "There is no single secret to shipping software."}, {"id": "sh2", "x": -817.0, "y": -59.5, "t": "shipping", "ty": "method", "c": "CORE", "at": "creator", "r": 5.3, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "What actually works is shrinking the batch: ship a tiny change every day so you learn every day."}, {"id": "sh3", "x": -810.8, "y": 33.8, "t": "shipping", "ty": "opinion", "c": "STATED", "at": "quoted", "r": 3.9, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "Beginners believe you need a big launch for your work to matter — a belief Ada rejects."}, {"id": "sh4", "x": -969.8, "y": 43.0, "t": "shipping", "ty": "claim", "c": "STATED", "at": "creator", "r": 4.6, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "Big launches hide what users actually want behind months of guessing."}, {"id": "sh5", "x": -1048.1, "y": -7.7, "t": "shipping", "ty": "style", "c": "STATED", "at": "creator", "r": 3.2, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "Ada would rather be slightly embarrassed by version one than proud of a version that never ships."}, {"id": "sh6", "x": -978.8, "y": -47.4, "t": "shipping", "ty": "warning", "c": "CORE", "at": "creator", "r": 3.2, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "Polishing something nobody uses is procrastination with extra steps."}, {"id": "sh7", "x": -887.0, "y": 77.4, "t": "shipping", "ty": "method", "c": "CORE", "at": "creator", "r": 4.6, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "Ada&#x27;s rule: ship the smallest thing a real person can react to, then let their reaction tell you what to build next."}, {"id": "sh8", "x": -890.7, "y": -6.6, "t": "shipping", "ty": "claim", "c": "STATED", "at": "creator", "r": 3.2, "s": "ada-shipping", "u": "https://example.com/ada/shipping", "x2": "The build–react loop, not talent, is what compounds over a career."}, {"id": "fo1", "x": 942.4, "y": 47.6, "t": "focus", "ty": "claim", "c": "CORE", "at": "creator", "r": 6.0, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "Your editor and tool stack are not what make you fast."}, {"id": "fo2", "x": 848.9, "y": 13.6, "t": "focus", "ty": "claim", "c": "STATED", "at": "creator", "r": 3.2, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "The fastest people Ada knows use boring tools they have used for years."}, {"id": "fo3", "x": 1011.1, "y": -79.2, "t": "focus", "ty": "warning", "c": "STATED", "at": "creator", "r": 3.9, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "Switching tools every month feels productive but is a tax you pay over and over."}, {"id": "fo4", "x": 1020.5, "y": 21.4, "t": "focus", "ty": "opinion", "c": "STATED", "at": "quoted", "r": 3.9, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "The myth, which Ada rejects, that more tools mean more output."}, {"id": "fo5", "x": 842.1, "y": -69.8, "t": "focus", "ty": "claim", "c": "STATED", "at": "creator", "r": 3.2, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "Every new tool is a new thing to maintain and forget."}, {"id": "fo6", "x": 862.7, "y": 112.7, "t": "focus", "ty": "method", "c": "CORE", "at": "creator", "r": 3.9, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "Ada keeps one notebook, one editor, and one terminal, and almost never changes them."}, {"id": "fo7", "x": 771.9, "y": 75.4, "t": "focus", "ty": "concept", "c": "CORE", "at": "creator", "r": 4.6, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "Focus is a budget, not a feeling: you spend it on the work or on the meta-work."}, {"id": "fo8", "x": 911.5, "y": -38.0, "t": "focus", "ty": "warning", "c": "STATED", "at": "creator", "r": 3.2, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "Meta-work is sneaky because it looks like progress."}, {"id": "fo9", "x": 917.6, "y": -143.8, "t": "focus", "ty": "opinion", "c": "CORE", "at": "creator", "r": 3.2, "s": "ada-focus", "u": "https://example.com/ada/focus", "x2": "The boring stack is the fast stack."}], "edges": [{"a": "sh2", "b": "sh1", "r": "supports"}, {"a": "sh3", "b": "sh2", "r": "contradicts"}, {"a": "sh4", "b": "sh3", "r": "contradicts"}, {"a": "sh4", "b": "sh2", "r": "supports"}, {"a": "sh6", "b": "sh7", "r": "contrast"}, {"a": "sh7", "b": "sh2", "r": "generalizes"}, {"a": "sh8", "b": "sh7", "r": "because"}, {"a": "sh5", "b": "sh4", "r": "example-of"}, {"a": "fo2", "b": "fo1", "r": "evidence-for"}, {"a": "fo3", "b": "fo1", "r": "supports"}, {"a": "fo4", "b": "fo1", "r": "contradicts"}, {"a": "fo5", "b": "fo4", "r": "contradicts"}, {"a": "fo6", "b": "fo7", "r": "example-of"}, {"a": "fo7", "b": "fo1", "r": "because"}, {"a": "fo8", "b": "fo7", "r": "qualifies"}, {"a": "fo9", "b": "fo1", "r": "generalizes"}, {"a": "fo6", "b": "fo3", "r": "because"}], "colors": {"focus": "#4da3ff", "shipping": "#3ddc97"}, "counts": {"atoms": 17, "edges": 17, "topics": 2}};
+const REDUCE_MOTION = typeof matchMedia === 'function'
+  && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 let W, H, DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -217,7 +223,10 @@ const cc = {};
   for (const n of N){ const a = acc[n.t] || (acc[n.t] = [0,0,0]); a[0]+=n.x; a[1]+=n.y; a[2]++; }
   for (const t in acc) cc[t] = [acc[t][0]/acc[t][2], acc[t][1]/acc[t][2]]; }
 let alpha = 0, grabbed = null, running = false;
-function reheat(a){ alpha = Math.max(alpha, a); if(!running){ running = true; requestAnimationFrame(loop); } }
+function reheat(a){
+  if (REDUCE_MOTION && !grabbed){ draw(); return; }   // honor OS reduced-motion: no autoplay sim
+  alpha = Math.max(alpha, a); if(!running){ running = true; requestAnimationFrame(loop); }
+}
 
 function tick(){
   const grid = {};
@@ -349,6 +358,7 @@ function showDetail(n){
 }
 function focusNode(n){
   const tx = W/2 - n.x*scale, ty = H/2 - n.y*scale;
+  if (REDUCE_MOTION){ ox = tx; oy = ty; if(!running) draw(); return; }
   const t0 = ox, t1 = oy, dur = 360, start = performance.now();
   (function anim(t){ const k = Math.min(1,(t-start)/dur), e = 1-(1-k)*(1-k);
     ox = t0 + (tx-t0)*e; oy = t1 + (ty-t1)*e; if(!running) draw();

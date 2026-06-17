@@ -102,6 +102,10 @@
   #empty h2{color:var(--ink-bright);margin:0;font-weight:600}
   #empty code{background:rgba(255,255,255,.07);padding:2px 7px;border-radius:6px;color:var(--ink)}
 
+  @media (prefers-reduced-motion: reduce){
+    .dot,.spinner{animation:none}
+    #detail{transition:opacity .2s}
+  }
   @media (max-width:680px){
     #legend{max-width:150px;padding:8px}#legend .ct{display:none}
     #searchwrap{width:min(62vw,260px)}#hud{max-width:54vw}
@@ -152,6 +156,8 @@
 
 <script>
 const DATA = __DATA__;
+const REDUCE_MOTION = typeof matchMedia === 'function'
+  && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 let W, H, DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -217,7 +223,10 @@ const cc = {};
   for (const n of N){ const a = acc[n.t] || (acc[n.t] = [0,0,0]); a[0]+=n.x; a[1]+=n.y; a[2]++; }
   for (const t in acc) cc[t] = [acc[t][0]/acc[t][2], acc[t][1]/acc[t][2]]; }
 let alpha = 0, grabbed = null, running = false;
-function reheat(a){ alpha = Math.max(alpha, a); if(!running){ running = true; requestAnimationFrame(loop); } }
+function reheat(a){
+  if (REDUCE_MOTION && !grabbed){ draw(); return; }   // honor OS reduced-motion: no autoplay sim
+  alpha = Math.max(alpha, a); if(!running){ running = true; requestAnimationFrame(loop); }
+}
 
 function tick(){
   const grid = {};
@@ -349,6 +358,7 @@ function showDetail(n){
 }
 function focusNode(n){
   const tx = W/2 - n.x*scale, ty = H/2 - n.y*scale;
+  if (REDUCE_MOTION){ ox = tx; oy = ty; if(!running) draw(); return; }
   const t0 = ox, t1 = oy, dur = 360, start = performance.now();
   (function anim(t){ const k = Math.min(1,(t-start)/dur), e = 1-(1-k)*(1-k);
     ox = t0 + (tx-t0)*e; oy = t1 + (ty-t1)*e; if(!running) draw();
