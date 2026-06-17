@@ -155,3 +155,12 @@ lists all videos; `atoms.jsonl` records which are done; remaining = manifest vid
 A re-run resumes automatically (the `add` path skips done videos). **If `check` is not green when a
 run ends, do NOT pretend it's finished** — end with: `PARTIAL — N of M videos done. Run /engram
 <name> again to continue.` Only when `python -m engram check <brain>` exits 0 is the build DONE.
+
+## Final report (when DONE)
+
+When `python -m engram check <brain>` exits 0, tell the user:
+1. **Coverage** — N of M videos distilled (and which, if any, were `missed` for lack of captions),
+   total atoms + edges, and that every source cleared the density + polarity gates.
+2. **How to use it** — invoke `/<name>` to query the brain.
+3. **Open the graph** — explicitly point them to `<brain>/graph.html` ("open it in your browser to
+   explore the reasoning graph"), since that visualization is the most tangible proof the build worked.

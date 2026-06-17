@@ -89,6 +89,7 @@ def main(argv: list[str]) -> int:
         print(f"\n[FAIL] {len(flagged)} source(s) below atom-density gate: {flagged}")
         return 1
     print("\n[OK] integrity clean and every source with atoms clears the gate.")
+    print(f"     Open {brain.graph_path} in a browser to explore the graph.")
     return 0
 
 
