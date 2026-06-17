@@ -10,7 +10,6 @@
   html,body{margin:0;height:100%;background:#03040a;overflow:hidden;
     font:16px/1.5 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
   #cv{position:fixed;inset:0;display:block}
-  #grain{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:overlay;opacity:.5}
   #vig{position:fixed;inset:0;pointer-events:none;z-index:3;
     background:radial-gradient(130% 105% at 50% 46%,transparent 36%,rgba(0,0,0,.66) 100%)}
   #flash{position:fixed;inset:0;z-index:4;pointer-events:none;background:#eaf1ff;opacity:0}
@@ -53,7 +52,6 @@
 </head>
 <body>
 <canvas id="cv"></canvas>
-<canvas id="grain"></canvas>
 <div id="vig"></div>
 <div id="flash"></div>
 
@@ -76,7 +74,6 @@
 
 <script>
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
-const grain=document.getElementById('grain'), gctx=grain.getContext('2d');
 const scene=document.createElement('canvas'), sctx=scene.getContext('2d');   // persistent (motion trails)
 const bloom=document.createElement('canvas'), bctx=bloom.getContext('2d');   // low-res blur
 const DPR=Math.min(devicePixelRatio||1,2);
@@ -87,7 +84,6 @@ function size(){
   cv.style.width=scene.style.width=W+'px'; cv.style.height=scene.style.height=H+'px';
   ctx.setTransform(DPR,0,0,DPR,0,0); sctx.setTransform(DPR,0,0,DPR,0,0);
   bloom.width=Math.max(2,Math.ceil(W/4)); bloom.height=Math.max(2,Math.ceil(H/4));
-  grain.width=Math.ceil(W/3); grain.height=Math.ceil(H/3); grain.style.width=W+'px'; grain.style.height=H+'px';
 }
 size(); addEventListener('resize', size);
 
@@ -156,10 +152,6 @@ const _at=parseFloat(new URLSearchParams(location.hash.slice(1)).get('at')??new 
 const FROZEN=isFinite(_at);              // ?at=/#at= freezes on that exact second (thumbnails/verify)
 if(FROZEN)t0=performance.now()-_at*1000;
 if(/(^|[?#&])clean\b/.test(location.search+location.hash))document.body.classList.add('clean');
-
-let gf=0;
-function drawGrain(){const gw=grain.width,gh=grain.height,img=gctx.createImageData(gw,gh),d=img.data;
-  for(let i=0;i<d.length;i+=4){const v=128+(Math.random()*255-128)*0.5|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}gctx.putImageData(img,0,0);}
 
 const proj=new Array(NODES.length);
 function frame(now){
@@ -242,13 +234,12 @@ function frame(now){
 
   flash.style.opacity=fl.toFixed(3);
 
-  if(gf++%2===0) drawGrain();
   for(const cp of caps){const a=+cp.dataset.in,b=+cp.dataset.out;cp.classList.toggle('show',t>=a&&t<b);}
   endEl.classList.toggle('show',t>=DUR+0.3);
   bar.style.width=Math.min(100,(t/(DUR+2))*100)+'%';
   requestAnimationFrame(frame);
 }
-drawGrain(); requestAnimationFrame(frame);
+requestAnimationFrame(frame);
 function restart(){t0=performance.now();sctx.clearRect(0,0,W,H);}
 document.getElementById('again').onclick=restart;
 document.getElementById('skip').onclick=()=>{t0=performance.now()-DUR*1000;};
