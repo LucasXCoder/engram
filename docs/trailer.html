@@ -257,8 +257,10 @@ function frame(now){
   const qp=clamp((t-14.3)/1.2,0,1); qtext.textContent=QUESTION.slice(0,Math.round(qp*QUESTION.length));
   answer.classList.toggle('show', t>=15.7&&t<19.7);
 
-  for(const cp of caps){const a=+cp.dataset.in,b=+cp.dataset.out;cp.classList.toggle('show',t>=a&&t<b);}
+  for(const cp of caps){const a=+cp.dataset.in,b=+cp.dataset.out;const on=t>=a&&t<b;cp.classList.toggle('show',on);
+    if(on&&narrate&&!cp._said){cp._said=true;say(cp.querySelector('.big').textContent);}}
   endEl.classList.toggle('show', t>=DUR+0.3);
+  if(t>=DUR+0.3&&narrate&&!endSaid){endSaid=true;say('engram. Turn any creator into a brain you can talk to.');}
   bar.style.width=Math.min(100,(t/(DUR+3))*100)+'%';
   requestAnimationFrame(frame);
 }
@@ -269,24 +271,52 @@ function initAudio(){if(actx)return;const AC=window.AudioContext||window.webkitA
   const comp=actx.createDynamicsCompressor();master=actx.createGain();master.gain.value=0.85;master.connect(comp);comp.connect(actx.destination);}
 function noiseBuf(d){const n=Math.floor(actx.sampleRate*d),b=actx.createBuffer(1,n,actx.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=Math.random()*2-1;return b;}
 function envg(g,at,a,pk,d){g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+a);g.gain.exponentialRampToValueAtTime(0.0001,at+a+d);}
-function boom(at,f0,f1,d,pk){const o=actx.createOscillator(),g=actx.createGain();o.type='sine';
-  o.frequency.setValueAtTime(f0,at);o.frequency.exponentialRampToValueAtTime(f1,at+d);envg(g,at,0.012,pk,d);o.connect(g);g.connect(master);o.start(at);o.stop(at+d+0.2);}
-function whoosh(at,d,fa,fb,pk){const s=actx.createBufferSource();s.buffer=noiseBuf(d+0.15);const bp=actx.createBiquadFilter();bp.type='bandpass';bp.Q.value=0.7;
-  bp.frequency.setValueAtTime(fa,at);bp.frequency.exponentialRampToValueAtTime(fb,at+d);const g=actx.createGain();envg(g,at,d*0.45,pk,d*0.55);s.connect(bp);bp.connect(g);g.connect(master);s.start(at);s.stop(at+d+0.15);}
 function ping(at,f,pk){[[1,pk,0.5],[2,pk*0.4,0.4]].forEach(p=>{const o=actx.createOscillator(),g=actx.createGain();o.type=p[0]===1?'triangle':'sine';o.frequency.value=f*p[0];envg(g,at,0.006,p[1],p[2]);o.connect(g);g.connect(master);o.start(at);o.stop(at+p[2]+0.1);});}
-function drone(at,d,pk){[55,82.5,110].forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain(),lp=actx.createBiquadFilter();
-  o.type='sawtooth';o.frequency.value=f*(1+i*0.003);lp.type='lowpass';lp.frequency.value=300;
-  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+2.5);g.gain.setValueAtTime(pk,at+d-3);g.gain.exponentialRampToValueAtTime(0.0001,at+d);
+// bright plucked note (energetic, not dark)
+function pluck(at,f,pk,d){const o=actx.createOscillator(),g=actx.createGain();o.type='triangle';o.frequency.value=f;
+  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+0.008);g.gain.exponentialRampToValueAtTime(0.0001,at+d);
+  o.connect(g);g.connect(master);o.start(at);o.stop(at+d+0.05);}
+// bright major chord stab
+function stab(at,freqs,pk,d){freqs.forEach(f=>{const o=actx.createOscillator(),g=actx.createGain(),lp=actx.createBiquadFilter();
+  o.type='sawtooth';o.frequency.value=f;lp.type='lowpass';lp.frequency.setValueAtTime(4500,at);lp.frequency.exponentialRampToValueAtTime(700,at+d);
+  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+0.012);g.gain.exponentialRampToValueAtTime(0.0001,at+d);
+  o.connect(lp);lp.connect(g);g.connect(master);o.start(at);o.stop(at+d+0.05);});}
+// short punchy sub (weight, not a long scary boom)
+function subhit(at,pk){const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.setValueAtTime(150,at);o.frequency.exponentialRampToValueAtTime(55,at+0.22);
+  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+0.01);g.gain.exponentialRampToValueAtTime(0.0001,at+0.4);o.connect(g);g.connect(master);o.start(at);o.stop(at+0.5);}
+// bright upward riser (hype, not ominous)
+function riseUp(at,d,pk){const s=actx.createBufferSource();s.buffer=noiseBuf(d+0.1);const bp=actx.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.2;
+  bp.frequency.setValueAtTime(300,at);bp.frequency.exponentialRampToValueAtTime(4200,at+d);const g=actx.createGain();envg(g,at,d*0.7,pk,d*0.3);s.connect(bp);bp.connect(g);g.connect(master);s.start(at);s.stop(at+d+0.1);}
+// driving pentatonic arpeggio for momentum
+const PENT=[523.25,587.33,659.25,783.99,880,1046.5];
+function arpBed(a,from,to,step,pk){let i=0;for(let tt=from;tt<to;tt+=step){const f=PENT[i%PENT.length]*(i%8<4?1:0.5);pluck(a+tt,f,pk*(0.7+0.3*Math.sin(i)),step*0.85);i++;}}
+// soft BRIGHT major pad (C-E-G), replaces the scary low drone
+function pad(at,d,pk){[261.6,329.6,392].forEach(f=>{const o=actx.createOscillator(),g=actx.createGain(),lp=actx.createBiquadFilter();
+  o.type='sawtooth';o.frequency.value=f;lp.type='lowpass';lp.frequency.value=1300;
+  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+1.8);g.gain.setValueAtTime(pk,at+d-3);g.gain.exponentialRampToValueAtTime(0.0001,at+d);
   o.connect(lp);lp.connect(g);g.connect(master);o.start(at);o.stop(at+d+0.2);});}
 function scoreFrom(a){
-  drone(a,DUR+4,0.07);
-  whoosh(a+1.3,1.7,200,1500,0.13);                         // riser into the bang
-  boom(a+3.0,150,42,1.7,0.7); whoosh(a+3.0,1.1,1900,320,0.12);  // BIG BANG
-  whoosh(a+10.5,1.0,1700,180,0.16); boom(a+10.7,95,52,0.8,0.32); // dive
-  whoosh(a+15.3,1.3,260,1200,0.10); ping(a+15.8,880,0.18);       // burst out + answer ping
-  boom(a+DUR,125,38,2.4,0.75); ping(a+DUR+0.18,1320,0.14);       // title drop
+  pad(a,DUR+3,0.035);                                   // bright major bed
+  arpBed(a,0.5,3.0,0.20,0.06); riseUp(a+1.5,1.5,0.16);  // building arp + hype riser
+  stab(a+3.0,[523,659,784,1047],0.15,1.0); subhit(a+3.0,0.45); riseUp(a+3.0,0.5,0.1);  // LAUNCH (bright)
+  arpBed(a+3.4,0,7.0,0.30,0.05);                         // driving momentum under the orbit
+  riseUp(a+10.1,0.9,0.18); stab(a+10.7,[659,880,1047],0.13,0.6); subhit(a+10.7,0.32);  // dive
+  arpBed(a+11.2,0,4.2,0.34,0.045);
+  ping(a+15.8,1047,0.2); ping(a+16.0,1318,0.15);         // happy answer chime
+  stab(a+DUR,[523,659,784,1047,1318],0.17,1.8); subhit(a+DUR,0.5); ping(a+DUR+0.2,1568,0.14);  // triumphant title
 }
-function restart(){t0=performance.now();sctx.clearRect(0,0,W,H);if(audioOn&&actx)scoreFrom(actx.currentTime);}
+// ---- rich AI narration (built-in SpeechSynthesis; reads the captions) ----
+let narrate=false, voice=null, endSaid=false;
+function loadVoice(){const vs=speechSynthesis.getVoices();
+  const pref=['Google UK English Female','Microsoft Aria','Microsoft Jenny','Google US English','Samantha','Microsoft Guy','Google UK English Male'];
+  for(const p of pref){const v=vs.find(x=>x.name.includes(p));if(v){voice=v;return;}}
+  voice=vs.find(x=>x.lang&&x.lang.startsWith('en'))||vs[0]||null;}
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=loadVoice;}
+function say(text){if(!narrate||!('speechSynthesis' in window))return;const u=new SpeechSynthesisUtterance(text);if(voice)u.voice=voice;u.rate=0.94;u.pitch=1.0;u.volume=1.0;speechSynthesis.speak(u);}
+function restart(){t0=performance.now();sctx.clearRect(0,0,W,H);
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  caps.forEach(c=>c._said=false); endSaid=false;
+  if(audioOn&&actx)scoreFrom(actx.currentTime);}
 document.getElementById('again').onclick=restart;
 document.getElementById('skip').onclick=()=>{t0=performance.now()-DUR*1000;};
 const fmtBtn=document.getElementById('fmt');
@@ -294,7 +324,8 @@ function toggleVert(){vertOverride=!VERT;computeVert();fmtBtn.textContent=VERT?'
 fmtBtn.textContent=VERT?'🖥 wide':'📱 phone';
 fmtBtn.onclick=toggleVert;
 const sndBtn=document.getElementById('snd');
-function enableSound(){initAudio();audioOn=true;sndBtn.textContent='🔊 on';actx.resume();restart();}  // gesture → start synced audio from the top
+function enableSound(){initAudio();audioOn=true;narrate=true;sndBtn.textContent='🔊 on';loadVoice();
+  if('speechSynthesis' in window)speechSynthesis.resume();actx.resume();restart();}  // gesture → start synced music + voice from the top
 sndBtn.onclick=enableSound;
 addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')restart();else if(e.key==='v'||e.key==='V')toggleVert();else if(e.key==='s'||e.key==='S')enableSound();});
 addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&performance.now()-t0>(DUR+3)*1000)restart();});
