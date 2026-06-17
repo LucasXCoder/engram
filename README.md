@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/python-3.10%2B-4da3ff" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/license-MIT-3ddc97" alt="MIT">
   <img src="https://img.shields.io/badge/dependencies-yt--dlp%20only-c792ea" alt="Minimal deps">
-  <img src="https://img.shields.io/badge/tests-27%20passing-3ddc97" alt="Tests">
+  <img src="https://img.shields.io/badge/tests-34%20passing-3ddc97" alt="Tests">
 </p>
 
 <p align="center">
@@ -115,16 +115,26 @@ Builds are **resumable**: state lives in the brain itself (`manifest.json` lists
 
 ## CLI
 
+**Build a brain:**
 ```
 python -m engram new <dir>                 scaffold a new empty brain
 python -m engram fetch <channel> <dir>     enumerate a channel + fetch transcripts (incremental)
-python -m engram add <dir> <stage.json>    append a staged batch of atoms + edges (guarded)
+python -m engram preview <dir> <stage>...  validate + project stage-file density (writes nothing)
+python -m engram add <dir> <stage>...      append staged atoms + edges (guarded, multi-file)
 python -m engram build <dir>               validate + density gate + regenerate graph.html
 python -m engram audit <dir>               coverage audit (words-per-atom density)
 python -m engram polarity <dir> [--strict] fidelity audit (negation / attribution)
 python -m engram topics <dir>              regenerate references/topics/*.md
-python -m engram graph <dir>               regenerate graph.html only
 python -m engram check <dir>               build + audit + polarity in one pass (CI-friendly)
+```
+
+**Use a built brain:**
+```
+python -m engram query <dir> [terms] [--topic|--type|--tag|--confidence|--source X] [--edges] [--json]
+python -m engram stats <dir>               profile: counts, distributions, most-connected atoms
+python -m engram serve <dir>               (re)build graph.html and open it in the browser
+python -m engram register <dir>            upsert the brain into registry.json (counts + domains)
+python -m engram which <term...>           "which brain knows about X?" across the registry
 ```
 
 ## The visualization

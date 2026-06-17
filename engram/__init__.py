@@ -4,4 +4,4 @@ The Python package holds the shared tooling; a *brain* is just a data directory 
 See the `engram` CLI (`python -m engram --help`) and SKILL.md for the full workflow.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"

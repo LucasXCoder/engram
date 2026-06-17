@@ -21,12 +21,15 @@ never re-author build scripts per brain. Install once: `pip install -r requireme
 ```
 python -m engram new <dir> --creator NAME --channel URL   # scaffold an empty brain
 python -m engram fetch <channel-url> <dir>                # enumerate + fetch transcripts (incremental)
-python -m engram add <dir> <stage.json>                   # append a staged batch of atoms+edges (guarded)
+python -m engram preview <dir> <stage.json>...            # validate + project density BEFORE adding
+python -m engram add <dir> <stage.json>...                # append staged atoms+edges (guarded, multi-file)
 python -m engram build <dir>                              # integrity + density gate + regenerate graph.html
 python -m engram audit <dir>                              # words-per-atom coverage audit
 python -m engram polarity <dir> [--strict]                # fidelity audit (the "we love pies" check)
 python -m engram topics <dir>                             # regenerate references/topics/*.md
 python -m engram check <dir>                              # build + audit + polarity in one pass
+python -m engram register <dir>                           # upsert into registry.json (Step 6)
+python -m engram query <dir> [terms] [filters]            # search atoms; stats / serve also available
 ```
 
 ## Step 1 — ENUMERATE + FETCH the whole channel
@@ -99,10 +102,12 @@ number is evidence for which claim, which example illustrates which concept, wha
 never smooth them over.
 
 ### 3e. WRITE the batch, then ADD it (guarded)
-Write each video's atoms+edges to a stage file `{"atoms": [...], "edges": [...]}` and run
-`python -m engram add <brain-dir> stage.json`. It aborts writing anything on any error (id
-collisions, bad type/confidence/attribution/rel, unresolved edge endpoints). See
-`examples/demo-brain/_stage.json` for the exact shape.
+Write each video's atoms+edges to a stage file `{"atoms": [...], "edges": [...]}`. Optionally run
+`python -m engram preview <brain-dir> stage.json` first to validate and see the projected
+words-per-atom density against the gate (catch thin mining before committing). Then
+`python -m engram add <brain-dir> stage.json` (you can pass several stage files at once). It
+aborts writing a file on any error (id collisions, bad type/confidence/attribution/rel,
+unresolved edge endpoints). See `examples/demo-brain/_stage.json` for the exact shape.
 
 ## Step 4 — GATE (mandatory — a build is NOT done until this is green)
 
@@ -144,9 +149,10 @@ The brain's `SKILL.md` instructs Claude to: read knowledge.md first; route via t
 
 ## Step 6 — REGISTER the brain
 
-Add/update the brain's entry in `registry.json` (copy `registry.example.json` on first run): name,
-creator, handle, domains, path, trigger, coverage counts, atom/edge counts, built/last_updated. The
-registry is the fleet index — "which brain knows about X?".
+Run `python -m engram register <brain-dir>` to upsert the brain's entry into `registry.json` —
+name, creator, handle, domains (auto-derived from its topics), path, trigger, coverage counts,
+atom/edge counts, and built/last_updated dates are all computed for you. The registry is the fleet
+index; `python -m engram which <term>` answers "which brain knows about X?".
 
 ## Finishing & resuming (multi-pass builds)
 

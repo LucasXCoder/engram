@@ -102,6 +102,18 @@
   #empty h2{color:var(--ink-bright);margin:0;font-weight:600}
   #empty code{background:rgba(255,255,255,.07);padding:2px 7px;border-radius:6px;color:var(--ink)}
 
+  /* ---- controls (confidence filter + export) ---- */
+  #controls{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:6;
+    display:flex;gap:6px;align-items:center;padding:7px 9px}
+  #controls .seg{display:flex;gap:3px}
+  #controls button{font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--ink-dim);
+    padding:5px 10px;border-radius:8px;border:1px solid transparent;transition:.15s}
+  #controls button.on{color:var(--ink-bright);background:rgba(255,255,255,.08);border-color:var(--line-2)}
+  #controls button:hover{color:var(--ink-bright)}
+  #controls .sep{width:1px;height:18px;background:var(--line);margin:0 4px}
+  #mini{position:fixed;right:16px;bottom:54px;z-index:6;width:172px;height:118px;border-radius:10px;
+    border:1px solid var(--line);background:rgba(8,10,22,.66);cursor:crosshair;backdrop-filter:blur(8px)}
+
   @media (prefers-reduced-motion: reduce){
     .dot,.spinner{animation:none}
     #detail{transition:opacity .2s}
@@ -142,6 +154,14 @@
     <div class="neigh" id="dNeigh"></div>
   </div>
 </div>
+
+<div id="controls" class="glass">
+  <div class="seg" id="confSeg"></div>
+  <div class="sep"></div>
+  <button id="exportBtn" title="Download a PNG of the current view">⤓ PNG</button>
+</div>
+
+<canvas id="mini" class="glass" title="Overview — click to jump"></canvas>
 
 <div id="hint">
   <kbd>/</kbd> search · <kbd>F</kbd> fit · <kbd>Esc</kbd> close · drag a node · scroll to zoom
@@ -255,16 +275,33 @@ function loop(){ const live = tick(); draw(); if(live) requestAnimationFrame(loo
 
 // ---- search / filter state ----
 let query = '', matchCount = 0, selected = null;
+const activeConf = new Set(N.map(n => n.c));   // confidence filter: all on by default
 function applyFilter(){
   matchCount = 0;
   for (const n of N){
     const q = query && n.x2.toLowerCase().includes(query);
     n.match = !!q; if (q) matchCount++;
-    n.dim = (query && !q) || n.hidden;
-    n.hit = !n.hidden;
+    const confOff = !activeConf.has(n.c);
+    n.dim = (query && !q) || n.hidden || confOff;
+    n.hit = !n.hidden && !confOff;
   }
   $('searchcount').textContent = query ? matchCount + '' : '';
 }
+
+// confidence filter buttons (CORE / STATED / INFERRED, only those present)
+const confSeg = $('confSeg');
+const CONF_ORDER = ['CORE','STATED','INFERRED'];
+const confPresent = CONF_ORDER.filter(c => N.some(n => n.c === c))
+  .concat([...new Set(N.map(n => n.c))].filter(c => !CONF_ORDER.includes(c) && c));
+confPresent.forEach(c => {
+  const b = document.createElement('button'); b.textContent = c; b.className = 'on';
+  b.onclick = () => {
+    if (activeConf.has(c)) activeConf.delete(c); else activeConf.add(c);
+    b.classList.toggle('on', activeConf.has(c));
+    applyFilter(); if (!running) draw();
+  };
+  confSeg.appendChild(b);
+});
 
 // ---- render ----
 function draw(){
@@ -280,14 +317,26 @@ function draw(){
     if (col!==cur){ ctx.stroke(); ctx.strokeStyle=col; ctx.beginPath(); cur=col; }
     ctx.moveTo(sx(a.x),sy(a.y)); ctx.lineTo(sx(b.x),sy(b.y)); }
   ctx.stroke();
-  // selection edges — bright
+  // selection edges — bright, with relationship labels at their midpoints
   if (selected){
     ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = Math.max(.8, scale*1.4);
     ctx.beginPath();
+    const labels = [];
     for (const e of E){ if(e.a===selected.id||e.b===selected.id){
       const a=byid[e.a], b=byid[e.b];
-      ctx.moveTo(sx(a.x),sy(a.y)); ctx.lineTo(sx(b.x),sy(b.y)); } }
+      ctx.moveTo(sx(a.x),sy(a.y)); ctx.lineTo(sx(b.x),sy(b.y));
+      labels.push([(sx(a.x)+sx(b.x))/2, (sy(a.y)+sy(b.y))/2, relWord[e.r]||e.r]); } }
     ctx.stroke();
+    if (scale > 0.45){
+      ctx.font = '10px -apple-system,Segoe UI,sans-serif'; ctx.textAlign = 'center';
+      for (const [mx,my,word] of labels){
+        const w = ctx.measureText(word).width + 8;
+        ctx.fillStyle = 'rgba(10,12,24,.82)';
+        ctx.fillRect(mx-w/2, my-7, w, 14);
+        ctx.fillStyle = '#cdd3e0'; ctx.fillText(word, mx, my+3);
+      }
+      ctx.textAlign = 'start';
+    }
   }
   const k = Math.sqrt(scale);
   // halos
@@ -308,6 +357,50 @@ function draw(){
       ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(sx(n.x),sy(n.y), r+3, 0, 7); ctx.stroke();
     }
   }
+  drawMini();
+}
+
+// ---- minimap: whole-graph overview + current viewport rectangle ----
+const mini = $('mini'), mctx = mini ? mini.getContext('2d') : null;
+let MW = 172, MH = 118;
+function miniSize(){ if(!mini) return; mini.width = MW*DPR; mini.height = MH*DPR;
+  mctx.setTransform(DPR,0,0,DPR,0,0); }
+miniSize();
+let miniBounds = null;
+function drawMini(){
+  if (!mctx || !N.length) return;
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for (const n of N){ if(n.x<x0)x0=n.x; if(n.y<y0)y0=n.y; if(n.x>x1)x1=n.x; if(n.y>y1)y1=n.y; }
+  const pad=10, sw=(x1-x0)||1, sh=(y1-y0)||1, k=Math.min((MW-pad*2)/sw,(MH-pad*2)/sh);
+  const ox2=(MW-sw*k)/2-x0*k, oy2=(MH-sh*k)/2-y0*k;
+  miniBounds={k,ox2,oy2};
+  mctx.clearRect(0,0,MW,MH);
+  for (const n of N){ if(n.dim) continue;
+    mctx.fillStyle=DATA.colors[n.t]||'#888';
+    mctx.fillRect(n.x*k+ox2-0.6, n.y*k+oy2-0.6, 1.6, 1.6); }
+  // viewport rectangle (world region currently on screen)
+  const vx=wx(0)*k+ox2, vy=wy(0)*k+oy2, vw=(wx(W)-wx(0))*k, vh=(wy(H)-wy(0))*k;
+  mctx.strokeStyle='rgba(255,255,255,.7)'; mctx.lineWidth=1;
+  mctx.strokeRect(vx,vy,vw,vh);
+}
+if (mini){
+  mini.addEventListener('pointerdown', e => {
+    if (!miniBounds) return;
+    const r = mini.getBoundingClientRect();
+    const wxp=(e.clientX-r.left-miniBounds.ox2)/miniBounds.k;
+    const wyp=(e.clientY-r.top-miniBounds.oy2)/miniBounds.k;
+    ox = W/2 - wxp*scale; oy = H/2 - wyp*scale;   // center the clicked world point
+    if(!running) draw();
+  });
+}
+
+// ---- PNG export of the current canvas view ----
+{ const eb = $('exportBtn');
+  if (eb) eb.onclick = () => {
+    const a = document.createElement('a');
+    a.download = (DATA.name||'engram') + '-graph.png';
+    a.href = cv.toDataURL('image/png'); a.click();
+  };
 }
 
 function pick(px,py){

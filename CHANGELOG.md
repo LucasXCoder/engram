@@ -4,13 +4,31 @@ All notable changes to Engram are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.1] — 2026-06-17
+
+Makes a built brain usable and maintainable straight from the CLI, plus a richer graph. Proven
+end-to-end by building a real brain from an unseen channel (3 videos → 141 atoms / 140 edges).
+
+### Added
+- **`query`** — search atoms by free text plus `--topic` / `--type` / `--tag` / `--confidence` /
+  `--source` filters, with `--edges` to follow an atom's reasoning and `--json` for scripting.
+  The payoff of mining is finally reachable without hand-grepping `atoms.jsonl`.
+- **`stats`** — profile a brain: counts, distributions by topic/type/confidence/attribution,
+  edge-relation breakdown, connectivity, and the most-connected atoms.
+- **`serve`** — (re)build `graph.html` and open it in the browser in one command.
+- **`preview`** — validate stage files and project per-source density against the gate *without
+  writing*, so thin mining is caught before you commit.
+- **`register`** / **`which`** — upsert a brain into `registry.json` with auto-computed counts and
+  domains (derived from its topics), and answer "which brain knows about X?" across the fleet.
+- **Multi-file `add`** — `add <brain> a.json b.json …`; later files see earlier files' ids.
+- **Richer visualization** — confidence filter (CORE/STATED/INFERRED), a minimap with a draggable
+  viewport, edge-relationship labels on the selected atom, and one-click PNG export.
 
 ### Fixed
 - **Polarity audit on caption transcripts.** YouTube auto-captions have no punctuation, so the
   sentence-based cue matcher treated a whole transcript as one "sentence" and flagged nearly every
-  atom. Switched to a local 14-word window with a stronger overlap threshold — verified on a real
-  3-video build where it cut false positives from 102 to 0 while still catching genuine inversions.
+  atom. Switched to a local 14-word window with a stronger overlap threshold — verified on the
+  real 3-video build where it cut false positives from 102 to 0 while still catching inversions.
 
 ## [0.1.0] — 2026-06-17
 
