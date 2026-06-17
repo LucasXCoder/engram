@@ -121,18 +121,19 @@
 
 <div id="flash"></div>
 <div id="bar"></div>
-<div id="ctl"><button id="skip">skip →</button><button id="again">↺ replay</button></div>
+<div id="ctl"><button id="fmt">📱 phone</button><button id="skip">skip →</button><button id="again">↺ replay</button></div>
 
 <script>
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 const scene=document.createElement('canvas'), sctx=scene.getContext('2d');
 const bloom=document.createElement('canvas'), bctx=bloom.getContext('2d');
 const DPR=Math.min(devicePixelRatio||1,2);
-let W,H,VERT=false;
+let W,H,VERT=false,vertOverride=null;
 const FORCE_VERT=/(^|[?#&])vertical\b/.test(location.search+location.hash);
+function computeVert(){VERT = vertOverride!==null ? vertOverride : (FORCE_VERT || H>W*1.1);
+  document.body.classList.toggle('vert',VERT);}
 function size(){W=innerWidth;H=innerHeight;
-  VERT = FORCE_VERT || H>W*1.1;                 // portrait screen (or #vertical) → 9:16 composition
-  document.body.classList.toggle('vert',VERT);
+  computeVert();                                // auto 9:16 on portrait, or manual via the button
   for(const c of[cv,scene]){c.width=W*DPR;c.height=H*DPR;}
   cv.style.width=scene.style.width=W+'px';cv.style.height=scene.style.height=H+'px';
   ctx.setTransform(DPR,0,0,DPR,0,0);sctx.setTransform(DPR,0,0,DPR,0,0);
@@ -265,7 +266,11 @@ requestAnimationFrame(frame);
 function restart(){t0=performance.now();sctx.clearRect(0,0,W,H);}
 document.getElementById('again').onclick=restart;
 document.getElementById('skip').onclick=()=>{t0=performance.now()-DUR*1000;};
-addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')restart();});
+const fmtBtn=document.getElementById('fmt');
+function toggleVert(){vertOverride=!VERT;computeVert();fmtBtn.textContent=VERT?'🖥 wide':'📱 phone';sctx.clearRect(0,0,W,H);}
+fmtBtn.textContent=VERT?'🖥 wide':'📱 phone';
+fmtBtn.onclick=toggleVert;
+addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')restart();else if(e.key==='v'||e.key==='V')toggleVert();});
 addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&performance.now()-t0>(DUR+3)*1000)restart();});
 </script>
 </body>
