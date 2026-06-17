@@ -10,40 +10,71 @@
   html,body{margin:0;height:100%;background:#03040a;overflow:hidden;
     font:16px/1.5 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
   #cv{position:fixed;inset:0;display:block}
+  #scrim{position:fixed;inset:0;z-index:2;pointer-events:none;background:#03040a;opacity:0}
   #vig{position:fixed;inset:0;pointer-events:none;z-index:3;
     background:radial-gradient(130% 105% at 50% 46%,transparent 36%,rgba(0,0,0,.66) 100%)}
-  #flash{position:fixed;inset:0;z-index:4;pointer-events:none;background:#eaf1ff;opacity:0}
+  #flash{position:fixed;inset:0;z-index:8;pointer-events:none;background:#eaf1ff;opacity:0}
+  .glass{background:rgba(16,20,38,.72);backdrop-filter:blur(16px) saturate(140%);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);border:1px solid rgba(255,255,255,.1);
+    box-shadow:0 18px 60px rgba(0,0,0,.55)}
 
+  /* captions */
   #caps{position:fixed;inset:0;z-index:5;pointer-events:none}
-  .cap{position:absolute;left:50%;bottom:12%;transform:translateX(-50%) translateY(22px);
-    width:min(92vw,940px);text-align:center;opacity:0;
-    transition:opacity .6s ease,transform 1s cubic-bezier(.16,1,.3,1);filter:blur(6px)}
-  .cap.show{opacity:1;transform:translateX(-50%) translateY(0);filter:blur(0)}
-  .cap .big{font-size:clamp(30px,5.6vw,68px);font-weight:800;letter-spacing:-1.6px;color:#fff;
-    text-shadow:0 2px 50px rgba(0,0,0,.75),0 0 70px rgba(110,168,255,.22)}
-  .cap .sub{font-size:clamp(15px,2.3vw,22px);color:var(--dim);margin-top:14px;font-weight:500}
-  .cap .accent{color:#8fc0ff;text-shadow:0 0 26px rgba(110,168,255,.7)}
-  .cap .line{width:60px;height:2px;margin:0 auto 20px;border-radius:2px;
-    background:linear-gradient(90deg,transparent,#6ea8ff,transparent)}
+  .cap{position:absolute;left:50%;top:16%;transform:translateX(-50%) translateY(22px);
+    width:min(92vw,960px);text-align:center;opacity:0;
+    transition:opacity .6s ease,transform 1s cubic-bezier(.16,1,.3,1)}
+  .cap.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .cap.mid{top:50%;transform:translate(-50%,-50%) translateY(22px)}
+  .cap.mid.show{transform:translate(-50%,-50%)}
+  .cap .big{font-size:clamp(28px,5.2vw,62px);font-weight:800;letter-spacing:-1.4px;color:#fff;
+    text-shadow:0 2px 40px rgba(0,0,0,.8),0 0 50px rgba(110,168,255,.25)}
+  .cap .sub{font-size:clamp(15px,2.2vw,21px);color:var(--dim);margin-top:12px;font-weight:500}
+  .cap .accent{color:#8fc0ff;text-shadow:0 0 22px rgba(110,168,255,.7)}
+  .cap .line{width:58px;height:2px;margin:0 auto 18px;border-radius:2px;background:linear-gradient(90deg,transparent,#6ea8ff,transparent)}
 
-  #end{position:fixed;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;
-    justify-content:flex-end;gap:20px;padding-bottom:16vh;opacity:0;transition:opacity 1.1s ease;pointer-events:none}
+  /* product demo: query + cited answer */
+  #demo{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;
+    width:min(92vw,680px);display:flex;flex-direction:column;gap:16px;pointer-events:none}
+  #qbar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:16px;opacity:0;
+    transform:translateY(16px);transition:opacity .5s,transform .7s cubic-bezier(.16,1,.3,1);font-size:clamp(16px,2.4vw,22px)}
+  #qbar.show{opacity:1;transform:translateY(0)}
+  #qbar .mag{flex:none;opacity:.55}
+  #qtext{color:#fff;font-weight:600;white-space:nowrap;overflow:hidden}
+  #qbar .caret{width:2px;height:1.1em;background:var(--accent);display:inline-block;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  #answer{padding:20px 22px;border-radius:18px;opacity:0;transform:translateY(26px) scale(.97);
+    transition:opacity .6s,transform .8s cubic-bezier(.16,1,.3,1);border-left:3px solid #46e3a4}
+  #answer.show{opacity:1;transform:translateY(0) scale(1)}
+  #answer .atype{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#7fe0b4;font-weight:700;margin-bottom:9px}
+  #answer .atext{color:#fff;font-size:clamp(17px,2.7vw,25px);font-weight:600;line-height:1.4;letter-spacing:-.3px}
+  #answer .acite{margin-top:14px;display:inline-flex;align-items:center;gap:8px;color:#8fc0ff;
+    font-size:clamp(13px,1.9vw,16px);font-weight:600;padding:7px 12px;border-radius:999px;
+    background:rgba(110,168,255,.12);border:1px solid rgba(110,168,255,.25)}
+  #answer .acite::before{content:"↳";opacity:.8}
+
+  /* end card — CRISP title */
+  #end{position:fixed;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:22px;opacity:0;transition:opacity 1s ease;pointer-events:none;
+    background:radial-gradient(62% 60% at 50% 48%,rgba(3,4,10,.92) 0%,rgba(3,4,10,.6) 52%,transparent 88%)}
   #end.show{opacity:1;pointer-events:auto}
-  #end .tag{color:var(--ink);font-size:clamp(16px,2.7vw,24px);font-weight:600;text-align:center;max-width:90vw;
-    text-shadow:0 2px 30px rgba(0,0,0,.7)}
-  #end .cta{display:flex;align-items:center;gap:10px;color:var(--ink);font-size:clamp(14px,2.2vw,19px);
-    font-weight:600;padding:12px 22px;border:1px solid rgba(255,255,255,.2);border-radius:999px;
-    background:rgba(255,255,255,.06);backdrop-filter:blur(8px);box-shadow:0 8px 40px rgba(0,0,0,.5)}
-  #end .cta .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
-    box-shadow:0 0 16px var(--accent);animation:pulse 2s ease-in-out infinite}
+  #end .mark{font-size:clamp(66px,15vw,190px);font-weight:900;letter-spacing:-7px;color:#fff;line-height:.85;
+    text-shadow:0 0 34px rgba(110,168,255,.55),0 0 90px rgba(110,168,255,.28),0 3px 6px rgba(0,0,0,.5);
+    transform:scale(.92);transition:transform 1.1s cubic-bezier(.16,1,.3,1)}
+  #end.show .mark{transform:scale(1)}
+  #end .tag{color:var(--ink);font-size:clamp(16px,2.7vw,25px);font-weight:600;text-align:center;max-width:90vw;
+    text-shadow:0 2px 24px rgba(0,0,0,.8)}
+  #end .cta{display:flex;align-items:center;gap:10px;color:#fff;font-size:clamp(14px,2.2vw,19px);font-weight:600;
+    padding:13px 24px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);
+    backdrop-filter:blur(8px)}
+  #end .cta .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent);
+    animation:pulse 2s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
   #end .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
   #end .chip{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);
     border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 13px}
 
-  #bar{position:fixed;left:0;bottom:0;height:3px;width:0;z-index:7;
-    background:linear-gradient(90deg,#4da3ff,#c792ea,#ff9f43)}
-  #ctl{position:fixed;bottom:16px;right:18px;z-index:8;display:flex;gap:8px}
+  #bar{position:fixed;left:0;bottom:0;height:3px;width:0;z-index:9;background:linear-gradient(90deg,#4da3ff,#c792ea,#ff9f43)}
+  #ctl{position:fixed;bottom:16px;right:18px;z-index:10;display:flex;gap:8px}
   #ctl button{font:inherit;font-size:13px;color:var(--dim);background:rgba(255,255,255,.06);
     border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:7px 13px;cursor:pointer}
   #ctl button:hover{color:var(--ink);background:rgba(255,255,255,.12)}
@@ -52,92 +83,90 @@
 </head>
 <body>
 <canvas id="cv"></canvas>
+<div id="scrim"></div>
 <div id="vig"></div>
-<div id="flash"></div>
 
 <div id="caps">
-  <div class="cap" data-in="0.7" data-out="3.0"><div class="line"></div><div class="big">Every creator is a mind.</div></div>
-  <div class="cap" data-in="6.6" data-out="9.9"><div class="line"></div><div class="big">Engram learns their entire channel.</div></div>
-  <div class="cap" data-in="10.6" data-out="14.2"><div class="line"></div><div class="big">Every idea an <span class="accent">atom</span>. Every argument an <span class="accent">edge</span>.</div></div>
-  <div class="cap" data-in="15.8" data-out="18.6"><div class="line"></div><div class="big">Thousands of claims. <span class="accent">All cited</span>.</div></div>
-  <div class="cap" data-in="19.0" data-out="22.4"><div class="line"></div><div class="big">Ask it anything.</div><div class="sub">It thinks in their frameworks — and never fakes a source.</div></div>
+  <div class="cap mid" data-in="0.7" data-out="3.0"><div class="line"></div><div class="big">Every creator is a mind.</div></div>
+  <div class="cap" data-in="6.4" data-out="9.7"><div class="line"></div><div class="big">Engram learns their entire channel.</div></div>
+  <div class="cap" data-in="10.4" data-out="13.6"><div class="line"></div><div class="big">Every idea an <span class="accent">atom</span>. Every argument an <span class="accent">edge</span>.</div></div>
+  <div class="cap" data-in="14.2" data-out="16.6"><div class="big">Then just <span class="accent">ask</span>.</div></div>
+  <div class="cap" data-in="22.4" data-out="25.2"><div class="big">Cited to the source. <span class="accent">Never faked.</span></div></div>
+</div>
+
+<div id="demo">
+  <div id="qbar" class="glass">
+    <svg class="mag" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8fc0ff" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span id="qtext"></span><span class="caret"></span>
+  </div>
+  <div id="answer" class="glass">
+    <div class="atype">method · shipping</div>
+    <div class="atext">Ship the smallest thing a real person can react to — then let their reaction tell you what to build next.</div>
+    <div class="acite">source · youtu.be/ada-shipping</div>
+  </div>
 </div>
 
 <div id="end">
+  <div class="mark">engram</div>
   <div class="tag">Turn any creator's channel into a brain you can talk to.</div>
   <div class="cta"><span class="dot"></span>github.com/LucasXCoder/engram</div>
   <div class="chips"><span class="chip">open source</span><span class="chip">cited</span><span class="chip">a knowledge graph that argues</span></div>
 </div>
 
+<div id="flash"></div>
 <div id="bar"></div>
 <div id="ctl"><button id="skip">skip →</button><button id="again">↺ replay</button></div>
 
 <script>
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
-const scene=document.createElement('canvas'), sctx=scene.getContext('2d');   // persistent (motion trails)
-const bloom=document.createElement('canvas'), bctx=bloom.getContext('2d');   // low-res blur
+const scene=document.createElement('canvas'), sctx=scene.getContext('2d');
+const bloom=document.createElement('canvas'), bctx=bloom.getContext('2d');
 const DPR=Math.min(devicePixelRatio||1,2);
 let W,H;
-function size(){
-  W=innerWidth;H=innerHeight;
-  for(const c of [cv,scene]){c.width=W*DPR;c.height=H*DPR;}
-  cv.style.width=scene.style.width=W+'px'; cv.style.height=scene.style.height=H+'px';
-  ctx.setTransform(DPR,0,0,DPR,0,0); sctx.setTransform(DPR,0,0,DPR,0,0);
-  bloom.width=Math.max(2,Math.ceil(W/4)); bloom.height=Math.max(2,Math.ceil(H/4));
-}
-size(); addEventListener('resize', size);
+function size(){W=innerWidth;H=innerHeight;
+  for(const c of[cv,scene]){c.width=W*DPR;c.height=H*DPR;}
+  cv.style.width=scene.style.width=W+'px';cv.style.height=scene.style.height=H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);sctx.setTransform(DPR,0,0,DPR,0,0);
+  bloom.width=Math.max(2,Math.ceil(W/4));bloom.height=Math.max(2,Math.ceil(H/4));}
+size();addEventListener('resize',size);
 
 const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const COLORS=['#5db4ff','#46e3a4','#ffb24d','#cf9bff','#ffd95e'];
-const DUR=22.8;
-const rnd=(a,b)=>a+Math.random()*(b-a), clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const DUR=26.6;
+const rnd=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const easeIO=t=>{t=clamp(t,0,1);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;};
-const easeOut=t=>1-Math.pow(1-clamp(t,0,1),3), lerp=(a,b,t)=>a+(b-a)*t;
+const easeOut=t=>1-Math.pow(1-clamp(t,0,1),3),lerp=(a,b,t)=>a+(b-a)*t;
 
-// ---- ONE dense brain: a packed ellipsoidal cloud, colour-regioned but cohesive ----
-const NODES=[], EDGES=[];
-// region centres live INSIDE the ellipsoid and overlap, so colours blend into one mass
-const RC=COLORS.map((c,i)=>{const a=-Math.PI/2+i*2*Math.PI/5;
-  return {c,x:Math.cos(a)*215,y:Math.sin(a)*120,z:Math.sin(a*1.7)*150};});
-const NT=640;
-for(let k=0;k<NT;k++){
-  // sample inside an ellipsoid, denser toward the centre (a brain-like blob)
-  const u=Math.random()*6.283, v=Math.acos(2*Math.random()-1), rr=Math.pow(Math.random(),0.5);
-  const x=rr*Math.sin(v)*Math.cos(u)*430, y=rr*Math.sin(v)*Math.sin(u)*300, z=rr*Math.cos(v)*330;
-  let best=0,bd=1e9; for(let ri=0;ri<RC.length;ri++){const d=(RC[ri].x-x)**2+(RC[ri].y-y)**2+(RC[ri].z-z)**2;if(d<bd){bd=d;best=ri;}}
-  NODES.push({li:best,c:RC[best].c,tx:x,ty:y,tz:z,
-    ox:rnd(-18,18),oy:rnd(-18,18),oz:rnd(-18,18),
-    r:rnd(1.2,2.8)+(Math.random()<.07?rnd(2,4.5):0),ph:Math.random()*6.28,sp:rnd(.5,1.2)});
-}
-// dense web: connect every node to its 3 nearest (ANY region) so the whole brain is one network
-function nearAny(i,count){const a=NODES[i];
-  return NODES.map((b,j)=>({j,d:(b.tx-a.tx)**2+(b.ty-a.ty)**2+(b.tz-a.tz)**2}))
-    .filter(o=>o.j!==i).sort((x,y)=>x.d-y.d).slice(0,count).map(o=>o.j);}
+// ---- one dense cohesive brain ----
+const NODES=[],EDGES=[];
+const RC=COLORS.map((c,i)=>{const a=-Math.PI/2+i*2*Math.PI/5;return {c,x:Math.cos(a)*215,y:Math.sin(a)*120,z:Math.sin(a*1.7)*150};});
+for(let k=0;k<640;k++){const u=Math.random()*6.283,v=Math.acos(2*Math.random()-1),rr=Math.pow(Math.random(),0.5);
+  const x=rr*Math.sin(v)*Math.cos(u)*430,y=rr*Math.sin(v)*Math.sin(u)*300,z=rr*Math.cos(v)*330;
+  let best=0,bd=1e9;for(let ri=0;ri<RC.length;ri++){const d=(RC[ri].x-x)**2+(RC[ri].y-y)**2+(RC[ri].z-z)**2;if(d<bd){bd=d;best=ri;}}
+  NODES.push({c:RC[best].c,tx:x,ty:y,tz:z,ox:rnd(-18,18),oy:rnd(-18,18),oz:rnd(-18,18),
+    r:rnd(1.2,2.8)+(Math.random()<.07?rnd(2,4.5):0),ph:Math.random()*6.28,sp:rnd(.5,1.2)});}
+function nearAny(i,c){const a=NODES[i];return NODES.map((b,j)=>({j,d:(b.tx-a.tx)**2+(b.ty-a.ty)**2+(b.tz-a.tz)**2})).filter(o=>o.j!==i).sort((x,y)=>x.d-y.d).slice(0,c).map(o=>o.j);}
 const seen=new Set();
-NODES.forEach((a,i)=>nearAny(i,3).forEach(j=>{const k=i<j?i+'_'+j:j+'_'+i;
-  if(!seen.has(k)){seen.add(k);EDGES.push({a:i,b:j,ph:Math.random()});}}));
-const DUST=[]; for(let i=0;i<320;i++) DUST.push({x:rnd(-1800,1800),y:rnd(-1100,1100),z:rnd(-1600,1600),r:rnd(.4,1.5)});
+NODES.forEach((a,i)=>nearAny(i,3).forEach(j=>{const k=i<j?i+'_'+j:j+'_'+i;if(!seen.has(k)){seen.add(k);EDGES.push({a:i,b:j,ph:Math.random()});}}));
+const DUST=[];for(let i=0;i<320;i++)DUST.push({x:rnd(-1800,1800),y:rnd(-1100,1100),z:rnd(-1600,1600),r:rnd(.4,1.5)});
 
-// ---- camera ----
 const CAM=[
   {t:0,dist:480,yaw:-0.4,pitch:0.03,tx:0,ty:0,tz:0},
   {t:3,dist:560,yaw:-0.2,pitch:0.04,tx:0,ty:0,tz:0},
   {t:6,dist:1520,yaw:0.4,pitch:0.17,tx:0,ty:0,tz:0},
   {t:10,dist:1500,yaw:1.0,pitch:0.2,tx:0,ty:0,tz:0},
-  {t:11,dist:500,yaw:1.3,pitch:0.0,tx:200,ty:-30,tz:130},
-  {t:14,dist:450,yaw:2.15,pitch:-0.07,tx:230,ty:-5,tz:165},
-  {t:15.6,dist:1380,yaw:2.4,pitch:0.13,tx:0,ty:0,tz:0},
-  {t:18.6,dist:1240,yaw:2.95,pitch:0.13,tx:0,ty:0,tz:0},
-  {t:22,dist:1320,yaw:3.4,pitch:0.10,tx:0,ty:0,tz:0},
-  {t:24,dist:2200,yaw:3.75,pitch:0.07,tx:0,ty:0,tz:0},
-  {t:34,dist:2400,yaw:4.25,pitch:0.07,tx:0,ty:0,tz:0},
+  {t:11,dist:520,yaw:1.3,pitch:0.0,tx:200,ty:-30,tz:130},
+  {t:14,dist:470,yaw:2.15,pitch:-0.07,tx:230,ty:-5,tz:165},
+  {t:15.8,dist:1320,yaw:2.4,pitch:0.13,tx:0,ty:0,tz:0},
+  {t:22.5,dist:1380,yaw:2.95,pitch:0.12,tx:0,ty:0,tz:0},
+  {t:24.5,dist:1280,yaw:3.3,pitch:0.10,tx:0,ty:0,tz:0},
+  {t:26.6,dist:2150,yaw:3.6,pitch:0.07,tx:0,ty:0,tz:0},
+  {t:38,dist:2350,yaw:4.05,pitch:0.07,tx:0,ty:0,tz:0},
 ];
 function cam(t){let i=0;while(i<CAM.length-1&&t>=CAM[i+1].t)i++;const A=CAM[i],B=CAM[Math.min(i+1,CAM.length-1)];
   const k=easeIO((t-A.t)/((B.t-A.t)||1));
-  return {dist:lerp(A.dist,B.dist,k),yaw:lerp(A.yaw,B.yaw,k),pitch:lerp(A.pitch,B.pitch,k),
-          tx:lerp(A.tx,B.tx,k),ty:lerp(A.ty,B.ty,k),tz:lerp(A.tz,B.tz,k)};}
-const F=860;
-let SHX=0, SHY=0;   // camera shake offset (set per frame from impact intensity)
+  return {dist:lerp(A.dist,B.dist,k),yaw:lerp(A.yaw,B.yaw,k),pitch:lerp(A.pitch,B.pitch,k),tx:lerp(A.tx,B.tx,k),ty:lerp(A.ty,B.ty,k),tz:lerp(A.tz,B.tz,k)};}
+const F=860; let SHX=0,SHY=0;
 function project(x,y,z,c){x-=c.tx;y-=c.ty;z-=c.tz;
   const cy=Math.cos(c.yaw),sy=Math.sin(c.yaw);let x1=x*cy-z*sy,z1=x*sy+z*cy;
   const cp=Math.cos(c.pitch),sp=Math.sin(c.pitch);let y1=y*cp-z1*sp,z2=y*sp+z1*cp;
@@ -146,97 +175,77 @@ function npos(n,t){const e=easeOut((t-3)/3.2);
   return [lerp(n.ox,n.tx,e)+Math.sin(t*n.sp+n.ph)*3,lerp(n.oy,n.ty,e)+Math.cos(t*n.sp*.9+n.ph)*3,lerp(n.oz,n.tz,e)+Math.sin(t*n.sp*.7+n.ph)*3];}
 
 const caps=[...document.querySelectorAll('.cap')];
-const endEl=document.getElementById('end'),bar=document.getElementById('bar'),flash=document.getElementById('flash');
+const endEl=document.getElementById('end'),bar=document.getElementById('bar'),flash=document.getElementById('flash'),scrim=document.getElementById('scrim');
+const qbar=document.getElementById('qbar'),qtext=document.getElementById('qtext'),answer=document.getElementById('answer');
+const QUESTION="what's the secret to shipping?";
 let t0=performance.now();
 const _at=parseFloat(new URLSearchParams(location.hash.slice(1)).get('at')??new URLSearchParams(location.search).get('at'));
-const FROZEN=isFinite(_at);              // ?at=/#at= freezes on that exact second (thumbnails/verify)
-if(FROZEN)t0=performance.now()-_at*1000;
+const FROZEN=isFinite(_at); if(FROZEN)t0=performance.now()-_at*1000;
 if(/(^|[?#&])clean\b/.test(location.search+location.hash))document.body.classList.add('clean');
 
 const proj=new Array(NODES.length);
 function frame(now){
-  let t=(now-t0)/1000; if(REDUCE) t=DUR+5; if(FROZEN) t=_at;
-  const c=cam(t), dive=t>10.4&&t<15.3;
+  let t=(now-t0)/1000; if(REDUCE)t=DUR+5; if(FROZEN)t=_at;
+  const c=cam(t),dive=t>10.4&&t<15.3;
 
-  // impact intensity → white flash + camera shake
   let fl=0;
   fl=Math.max(fl,clamp(1-Math.abs(t-3.0)/0.55,0,1)*0.95);
   fl=Math.max(fl,clamp(1-Math.abs(t-10.7)/0.40,0,1)*0.60);
-  fl=Math.max(fl,clamp(1-Math.abs(t-15.4)/0.50,0,1)*0.50);
   SHX=(Math.random()*2-1)*fl*16; SHY=(Math.random()*2-1)*fl*16;
 
-  // --- SCENE LAYER (transparent, persistent → motion trails) ---
   sctx.globalCompositeOperation='destination-out';
-  sctx.globalAlpha=1; sctx.fillStyle='#000';
-  sctx.fillStyle='rgba(0,0,0,'+(dive?0.18:0.34)+')'; sctx.fillRect(0,0,W,H);
+  sctx.fillStyle='rgba(0,0,0,'+(dive?0.16:0.30)+')'; sctx.fillRect(0,0,W,H);
   sctx.globalCompositeOperation='lighter';
-
   for(let i=0;i<NODES.length;i++){const q=npos(NODES[i],t);proj[i]=project(q[0],q[1],q[2],c);}
-
-  // edges + pulses
   for(const e of EDGES){const A=proj[e.a],B=proj[e.b];if(!A||!B)continue;
-    const dep=(A.depth+B.depth)/2,fog=clamp(1500/dep,0,1);
-    if(fog<0.05)continue;   // skip far-away edges (perf on the denser web)
+    const dep=(A.depth+B.depth)/2,fog=clamp(1500/dep,0,1); if(fog<0.05)continue;
     sctx.strokeStyle=NODES[e.a].c+Math.round(clamp(fog*0.30,0,1)*255).toString(16).padStart(2,'0');
     sctx.lineWidth=Math.max(.3,fog*0.9);
     sctx.beginPath();sctx.moveTo(A.sx,A.sy);sctx.lineTo(B.sx,B.sy);sctx.stroke();
-    if(fog>0.22){const u=(t*0.34+e.ph)%1,px=lerp(A.sx,B.sx,u),py=lerp(A.sy,B.sy,u),pr=Math.max(.7,lerp(A.s,B.s,u)*1.4)*fog;
-      sctx.fillStyle='rgba(200,230,255,'+(fog*0.8).toFixed(2)+')';
-      sctx.beginPath();sctx.arc(px,py,pr,0,7);sctx.fill();}}
-
-  // blooming seed core — a brilliant point that births the brain, fading after the explosion
+    if(fog>0.22){const u=(t*0.4+e.ph)%1,px=lerp(A.sx,B.sx,u),py=lerp(A.sy,B.sy,u),pr=Math.max(.7,lerp(A.s,B.s,u)*1.4)*fog;
+      sctx.fillStyle='rgba(200,230,255,'+(fog*0.8).toFixed(2)+')';sctx.beginPath();sctx.arc(px,py,pr,0,7);sctx.fill();}}
   const C0=project(0,0,0,c);
-  if(C0){const coreA=clamp(1.0-t/6,0.07,0.9), coreR=clamp(C0.s*52,16,130);
+  if(C0){const coreA=clamp(1.0-t/6,0.07,0.9),coreR=clamp(C0.s*52,16,130);
     const grd=sctx.createRadialGradient(C0.sx,C0.sy,0,C0.sx,C0.sy,coreR);
-    grd.addColorStop(0,'rgba(225,238,255,'+coreA.toFixed(3)+')');
-    grd.addColorStop(0.5,'rgba(130,175,255,'+(coreA*0.4).toFixed(3)+')');
-    grd.addColorStop(1,'rgba(120,170,255,0)');
+    grd.addColorStop(0,'rgba(225,238,255,'+coreA.toFixed(3)+')');grd.addColorStop(0.5,'rgba(130,175,255,'+(coreA*0.4).toFixed(3)+')');grd.addColorStop(1,'rgba(120,170,255,0)');
     sctx.fillStyle=grd;sctx.beginPath();sctx.arc(C0.sx,C0.sy,coreR,0,7);sctx.fill();}
-
-  // nodes (depth sorted; bright cores)
   const order=[...proj.keys()].filter(i=>proj[i]).sort((a,b)=>proj[b].depth-proj[a].depth);
-  for(const i of order){const P=proj[i],n=NODES[i],fog=clamp(1600/P.depth,0,1.2),r=Math.max(.7,n.r*P.s*1.15);
-    sctx.fillStyle=n.c; sctx.globalAlpha=clamp(fog,0,1);
-    sctx.beginPath();sctx.arc(P.sx,P.sy,r,0,7);sctx.fill();}
+  for(const i of order){const P=proj[i],n=NODES[i],fog=clamp(1600/P.depth,0,1),r=Math.max(.7,n.r*P.s*1.15);
+    sctx.fillStyle=n.c;sctx.globalAlpha=clamp(fog,0,1);sctx.beginPath();sctx.arc(P.sx,P.sy,r,0,7);sctx.fill();}
   sctx.globalAlpha=1;
 
-  // canvas title during the finale (so it blooms)
-  if(t>=DUR-0.4){const k=easeOut((t-(DUR-0.4))/1.2),sc=lerp(1.18,1,k);
-    sctx.globalAlpha=clamp(k*1.2,0,1); sctx.fillStyle='#eaf1ff'; sctx.textAlign='center'; sctx.textBaseline='middle';
-    sctx.font='800 '+Math.min(W*0.16,200)*sc+'px -apple-system,Segoe UI,Inter,sans-serif';
-    sctx.fillText('engram', W/2, H*0.40); sctx.globalAlpha=1;}
-
-  // --- COMPOSITE to main ---
-  // nebula background (fresh each frame)
-  const g=ctx.createLinearGradient(0,0,W,H);
-  g.addColorStop(0,'#070b1c'); g.addColorStop(.5,'#04050d'); g.addColorStop(1,'#0a0713');
-  ctx.globalCompositeOperation='source-over'; ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-  // radial core glow behind the brain
-  const rg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.5);
-  rg.addColorStop(0,'rgba(40,70,150,0.18)'); rg.addColorStop(1,'transparent');
-  ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
-  // dust (fresh, additive)
+  // composite
+  const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#070b1c');g.addColorStop(.5,'#04050d');g.addColorStop(1,'#0a0713');
+  ctx.globalCompositeOperation='source-over';ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  const rg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.5);rg.addColorStop(0,'rgba(40,70,150,0.18)');rg.addColorStop(1,'transparent');
+  ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
   ctx.globalCompositeOperation='lighter';
   for(const p of DUST){const P=project(p.x,p.y,p.z,c);if(!P||P.depth<=1)continue;const a=clamp(800/P.depth,0,.45);if(a<.02)continue;
     ctx.fillStyle='rgba(150,180,255,'+a.toFixed(3)+')';ctx.fillRect(P.sx,P.sy,Math.max(.5,P.s*p.r),Math.max(.5,P.s*p.r));}
-  // scene
   ctx.globalCompositeOperation='source-over';
   ctx.drawImage(scene,0,0,scene.width,scene.height,0,0,W,H);
-  // BLOOM: blur the scene small, add back (two radii)
-  bctx.globalCompositeOperation='source-over'; bctx.clearRect(0,0,bloom.width,bloom.height);
-  bctx.filter='blur(2.5px)'; bctx.drawImage(scene,0,0,scene.width,scene.height,0,0,bloom.width,bloom.height); bctx.filter='none';
+  bctx.clearRect(0,0,bloom.width,bloom.height);bctx.filter='blur(2.5px)';
+  bctx.drawImage(scene,0,0,scene.width,scene.height,0,0,bloom.width,bloom.height);bctx.filter='none';
   ctx.globalCompositeOperation='lighter';
-  ctx.globalAlpha=0.85; ctx.drawImage(bloom,0,0,bloom.width,bloom.height,0,0,W,H);
-  ctx.globalAlpha=0.55; ctx.drawImage(bloom,0,0,bloom.width,bloom.height,-W*0.01,-H*0.01,W*1.02,H*1.02);
-  // anamorphic lateral flare: bloom stretched wide → cinematic horizontal light bleed
-  ctx.globalAlpha=0.30; ctx.drawImage(bloom,0,0,bloom.width,bloom.height,-W*0.32,H*0.02,W*1.64,H*0.96);
-  ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+  ctx.globalAlpha=0.85;ctx.drawImage(bloom,0,0,bloom.width,bloom.height,0,0,W,H);
+  ctx.globalAlpha=0.30;ctx.drawImage(bloom,0,0,bloom.width,bloom.height,-W*0.32,H*0.02,W*1.64,H*0.96);
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
 
   flash.style.opacity=fl.toFixed(3);
 
+  // --- timeline of overlays ---
+  // scrim dims the graph during the demo so the UI reads
+  let sc=0; if(t>13.8&&t<22.6) sc=clamp((t-13.8)/1.2,0,1)*0.66; if(t>=22.6&&t<24) sc=clamp(1-(t-22.6)/1.0,0,1)*0.66;
+  if(t>=25.5) sc=Math.max(sc, clamp((t-25.5)/1.5,0,1)*0.55);   // dim the brain so the title reads
+  scrim.style.opacity=sc.toFixed(3);
+  // query types out, then the cited answer slides in
+  qbar.classList.toggle('show', t>=14.0&&t<22.6);
+  const qp=clamp((t-14.4)/1.9,0,1); qtext.textContent=QUESTION.slice(0,Math.round(qp*QUESTION.length));
+  answer.classList.toggle('show', t>=16.7&&t<22.8);
+
   for(const cp of caps){const a=+cp.dataset.in,b=+cp.dataset.out;cp.classList.toggle('show',t>=a&&t<b);}
-  endEl.classList.toggle('show',t>=DUR+0.3);
-  bar.style.width=Math.min(100,(t/(DUR+2))*100)+'%';
+  endEl.classList.toggle('show', t>=DUR+0.3);
+  bar.style.width=Math.min(100,(t/(DUR+3))*100)+'%';
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -244,7 +253,7 @@ function restart(){t0=performance.now();sctx.clearRect(0,0,W,H);}
 document.getElementById('again').onclick=restart;
 document.getElementById('skip').onclick=()=>{t0=performance.now()-DUR*1000;};
 addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')restart();});
-addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&performance.now()-t0>(DUR+2)*1000)restart();});
+addEventListener('click',e=>{if(e.target.tagName!=='BUTTON'&&performance.now()-t0>(DUR+3)*1000)restart();});
 </script>
 </body>
 </html>
