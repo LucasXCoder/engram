@@ -333,21 +333,49 @@ function playChord(at,ch,dur,vol,withArp){
     o.connect(g);g.connect(master);o.start(at+off);o.stop(at+off+0.55);});   // driving bass pulse
   if(withArp){let k=0;for(let tt=0;tt<dur-0.1;tt+=0.26){pluck(at+tt,ch.arp[k%ch.arp.length],0.05*vol,0.24);k++;}}
 }
+// --- drums + melodic lead for a real arrangement ---
+function kick(at,pk){const o=actx.createOscillator(),g=actx.createGain();o.type='sine';
+  o.frequency.setValueAtTime(155,at);o.frequency.exponentialRampToValueAtTime(48,at+0.12);
+  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+0.005);g.gain.exponentialRampToValueAtTime(0.0001,at+0.19);
+  o.connect(g);g.connect(master);o.start(at);o.stop(at+0.22);}
+function hat(at,pk){const s=actx.createBufferSource();s.buffer=noiseBuf(0.05);const hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=7500;
+  const g=actx.createGain();envg(g,at,0.002,pk,0.035);s.connect(hp);hp.connect(g);g.connect(master);s.start(at);s.stop(at+0.07);}
+function lead(at,f,dur,pk){[0,7].forEach(det=>{const o=actx.createOscillator(),g=actx.createGain(),lp=actx.createBiquadFilter();
+  o.type='triangle';o.frequency.value=f;o.detune.value=det;lp.type='lowpass';lp.frequency.value=3400;
+  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+0.02);g.gain.setValueAtTime(pk*0.8,at+dur*0.6);g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(lp);lp.connect(g);g.connect(master);o.start(at);o.stop(at+dur+0.1);});}
+function melody(a,notes){notes.forEach(n=>lead(a+n[0],n[1],n[2],n[3]||0.1));}
+function drums(a,from,to,inten){const beat=0.48;for(let tt=from;tt<to;tt+=beat){kick(a+tt,0.55*inten);hat(a+tt+beat/2,0.05*inten);}}
+const N5={E:659.3,G:784,A:880,B:987.8,C:1046.5,D:1174.7,E6:1318.5};
 function scoreFrom(a){
-  newMaster();                                   // fresh mix bus every play — no stacking/overload
-  // progression cycles & evolves under the whole trailer (builds louder toward the title)
+  newMaster();
+  // harmonic bed: the progression, building (arp off — the lead carries the tune now)
   const CD=2.6; let i=0;
-  for(let tt=0;tt<DUR;tt+=CD){const ch=CHORDS[i%CHORDS.length];
-    const vol = tt<3?0.55 : (tt>DUR-5?1.0:0.82);
-    playChord(a+tt,ch,CD+0.25,vol, tt>=3 && !(tt>13.5&&tt<19));  // arp rests during the demo so the answer reads
-    i++;}
-  // swooshes lead into every beat → energetic momentum
-  [0.45,6.0,10.2,13.8,16.2,19.2].forEach((tt,k)=>swoosh(a+tt,k%2===0,0.15));
-  riseUp(a+1.5,1.5,0.15);
-  swoosh(a+2.9,true,0.2); stab(a+3.0,[523,659,784,1047],0.10,1.0); subhit(a+3.0,0.35);     // LAUNCH
-  swoosh(a+10.0,true,0.22); riseUp(a+10.1,0.9,0.16); stab(a+10.7,[659,880,1047],0.10,0.6); subhit(a+10.7,0.28); // dive
-  ping(a+15.8,1047,0.18); ping(a+16.0,1318,0.14);                                          // answer chime
-  swoosh(a+DUR-0.35,true,0.24); stab(a+DUR,[523,659,784,1047,1318],0.10,1.9); subhit(a+DUR,0.42); ping(a+DUR+0.2,1568,0.14); // title
+  for(let tt=0;tt<DUR;tt+=CD){const ch=CHORDS[i%CHORDS.length];const vol=tt<3?0.5:(tt>DUR-5?1.0:0.8);playChord(a+tt,ch,CD+0.25,vol,false);i++;}
+
+  // INTRO (sparse build)
+  swoosh(a+0.45,true,0.14); riseUp(a+1.5,1.5,0.15); lead(a+1.6,N5.G,1.0,0.07); lead(a+2.4,N5.C,0.6,0.07);
+  // LAUNCH
+  swoosh(a+2.9,true,0.22); stab(a+3.0,[523,659,784,1047],0.1,1.1); subhit(a+3.0,0.4); kick(a+3.0,0.65);
+  // MAIN: driving groove + the hook theme
+  drums(a,3.5,10.2,1.0);
+  melody(a,[[3.7,N5.G,0.5],[4.2,N5.A,0.5],[4.7,N5.C,0.85,0.12],[5.6,N5.B,0.4],[6.0,N5.A,0.6],[6.7,N5.G,0.7],
+            [7.5,N5.E,0.5],[8.0,N5.G,0.5],[8.5,N5.A,0.5],[9.0,N5.C,1.0,0.12]]);
+  // DIVE: hit + groove continues
+  swoosh(a+10.0,true,0.22); riseUp(a+10.1,0.9,0.16); stab(a+10.7,[659,880,1047],0.1,0.7); subhit(a+10.7,0.32); kick(a+10.7,0.6);
+  drums(a,11.2,14.6,0.85);
+  melody(a,[[11.4,N5.A,0.5],[11.9,N5.C,0.6,0.11],[12.6,N5.B,0.5],[13.1,N5.G,0.5],[13.6,N5.E,0.9]]);
+  // DEMO: pull back so the answer reads (no drums, just bed + chimes)
+  swoosh(a+13.8,false,0.13);
+  ping(a+15.8,N5.C,0.18); ping(a+16.0,N5.E6,0.14);
+  // BUILD to climax: riser + accelerating kicks
+  swoosh(a+19.2,true,0.18); riseUp(a+20.2,2.2,0.2);
+  [20.6,21.1,21.5,21.85,22.15,22.4,22.6,22.75].forEach((tt,k)=>kick(a+tt,0.3+0.045*k));
+  // TITLE climax: braam + four-on-floor + triumphant hook
+  swoosh(a+DUR-0.35,true,0.26); stab(a+DUR,[523,659,784,1047,1318],0.1,2.0); subhit(a+DUR,0.5); kick(a+DUR,0.75);
+  drums(a,DUR+0.5,DUR+3,1.0);
+  melody(a,[[DUR+0.1,N5.C,1.1,0.13],[DUR+1.1,N5.E6,1.6,0.12]]);
+  ping(a+DUR+0.25,1568,0.12);
 }
 // ---- rich AI narration (built-in SpeechSynthesis; reads the captions) ----
 let narrate=false, voice=null, endSaid=false;
