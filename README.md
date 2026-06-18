@@ -18,6 +18,12 @@
 </p>
 
 <p align="center">
+  <a href="https://lucasxcoder.github.io/engram/docs/trailer.html#clean"><b>▶&nbsp; Watch the trailer</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://lucasxcoder.github.io/engram/examples/demo-brain/graph.html"><b>🧠&nbsp; Explore a live brain graph</b></a>
+</p>
+
+<p align="center">
   <a href="#quickstart">Quickstart</a> ·
   <a href="#how-a-brain-is-built">How it works</a> ·
   <a href="#the-fidelity-guardrail">Fidelity</a> ·
@@ -139,7 +145,8 @@ python -m engram which <term...>           "which brain knows about X?" across t
 
 ## The visualization
 
-`graph.html` is a single self-contained file — no build step, no dependencies, no network. It runs
+[**▶ Open the live demo graph**](https://lucasxcoder.github.io/engram/examples/demo-brain/graph.html) — `graph.html`
+is a single self-contained file — no build step, no dependencies, no network. It runs
 a live force-directed ("jelly") simulation on a canvas, warm-started from a layout computed in
 Python, and layers a glass UI on top:
 
