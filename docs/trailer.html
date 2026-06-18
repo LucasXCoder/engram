@@ -268,9 +268,13 @@ function frame(now){
 }
 requestAnimationFrame(frame);
 // ---- synthesized score (Web Audio; self-contained, no files; starts on a user gesture) ----
-let actx=null,audioOn=false,master=null;
+let actx=null,audioOn=false,master=null,comp=null;
 function initAudio(){if(actx)return;const AC=window.AudioContext||window.webkitAudioContext;actx=new AC();
-  const comp=actx.createDynamicsCompressor();master=actx.createGain();master.gain.value=0.85;master.connect(comp);comp.connect(actx.destination);}
+  comp=actx.createDynamicsCompressor();        // brick-wall-ish limiter so nothing clips/crunches
+  comp.threshold.value=-8; comp.knee.value=3; comp.ratio.value=18; comp.attack.value=0.003; comp.release.value=0.25;
+  comp.connect(actx.destination); newMaster();}
+function newMaster(){ if(master){try{master.disconnect();}catch(e){}} // recreate the bus → silences anything still scheduled, so replays never stack
+  master=actx.createGain(); master.gain.value=0.5; master.connect(comp);}
 function noiseBuf(d){const n=Math.floor(actx.sampleRate*d),b=actx.createBuffer(1,n,actx.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=Math.random()*2-1;return b;}
 function envg(g,at,a,pk,d){g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(pk,at+a);g.gain.exponentialRampToValueAtTime(0.0001,at+a+d);}
 function ping(at,f,pk){[[1,pk,0.5],[2,pk*0.4,0.4]].forEach(p=>{const o=actx.createOscillator(),g=actx.createGain();o.type=p[0]===1?'triangle':'sine';o.frequency.value=f*p[0];envg(g,at,0.006,p[1],p[2]);o.connect(g);g.connect(master);o.start(at);o.stop(at+p[2]+0.1);});}
@@ -316,11 +320,12 @@ function playChord(at,ch,dur,vol,withArp){
     g.gain.setValueAtTime(0.03*vol,at+dur-0.5);g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
     o.connect(lp);lp.connect(g);g.connect(master);o.start(at);o.stop(at+dur+0.1);});
   [0,dur*0.5].forEach(off=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=ch.bass;
-    g.gain.setValueAtTime(0.0001,at+off);g.gain.exponentialRampToValueAtTime(0.2*vol,at+off+0.02);g.gain.exponentialRampToValueAtTime(0.0001,at+off+0.45);
+    g.gain.setValueAtTime(0.0001,at+off);g.gain.exponentialRampToValueAtTime(0.13*vol,at+off+0.02);g.gain.exponentialRampToValueAtTime(0.0001,at+off+0.45);
     o.connect(g);g.connect(master);o.start(at+off);o.stop(at+off+0.55);});   // driving bass pulse
   if(withArp){let k=0;for(let tt=0;tt<dur-0.1;tt+=0.26){pluck(at+tt,ch.arp[k%ch.arp.length],0.05*vol,0.24);k++;}}
 }
 function scoreFrom(a){
+  newMaster();                                   // fresh mix bus every play — no stacking/overload
   // progression cycles & evolves under the whole trailer (builds louder toward the title)
   const CD=2.6; let i=0;
   for(let tt=0;tt<DUR;tt+=CD){const ch=CHORDS[i%CHORDS.length];
@@ -328,12 +333,12 @@ function scoreFrom(a){
     playChord(a+tt,ch,CD+0.25,vol, tt>=3 && !(tt>13.5&&tt<19));  // arp rests during the demo so the answer reads
     i++;}
   // swooshes lead into every beat → energetic momentum
-  [0.45,6.0,10.2,13.8,16.2,19.2].forEach((tt,k)=>swoosh(a+tt,k%2===0,0.2));
-  riseUp(a+1.5,1.5,0.18);
-  swoosh(a+2.9,true,0.3); stab(a+3.0,[523,659,784,1047],0.16,1.0); subhit(a+3.0,0.55);     // LAUNCH
-  swoosh(a+10.0,true,0.32); riseUp(a+10.1,0.9,0.22); stab(a+10.7,[659,880,1047],0.14,0.6); subhit(a+10.7,0.36); // dive
-  ping(a+15.8,1047,0.22); ping(a+16.0,1318,0.16);                                          // answer chime
-  swoosh(a+DUR-0.35,true,0.34); stab(a+DUR,[523,659,784,1047,1318],0.2,2.0); subhit(a+DUR,0.62); ping(a+DUR+0.2,1568,0.16); // title
+  [0.45,6.0,10.2,13.8,16.2,19.2].forEach((tt,k)=>swoosh(a+tt,k%2===0,0.15));
+  riseUp(a+1.5,1.5,0.15);
+  swoosh(a+2.9,true,0.2); stab(a+3.0,[523,659,784,1047],0.10,1.0); subhit(a+3.0,0.35);     // LAUNCH
+  swoosh(a+10.0,true,0.22); riseUp(a+10.1,0.9,0.16); stab(a+10.7,[659,880,1047],0.10,0.6); subhit(a+10.7,0.28); // dive
+  ping(a+15.8,1047,0.18); ping(a+16.0,1318,0.14);                                          // answer chime
+  swoosh(a+DUR-0.35,true,0.24); stab(a+DUR,[523,659,784,1047,1318],0.10,1.9); subhit(a+DUR,0.42); ping(a+DUR+0.2,1568,0.14); // title
 }
 // ---- rich AI narration (built-in SpeechSynthesis; reads the captions) ----
 let narrate=false, voice=null, endSaid=false;
