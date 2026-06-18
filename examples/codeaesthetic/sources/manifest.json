@@ -1,0 +1,36 @@
+{
+  "creator": "CodeAesthetic",
+  "channel": "https://www.youtube.com/@CodeAesthetic",
+  "fetched": "2026-06-17",
+  "counts": {
+    "total": 3,
+    "transcript": 3,
+    "missed": 0
+  },
+  "items": [
+    {
+      "id": "nuML9SmdbJ4",
+      "type": "video",
+      "title": "Dear Functional Bros",
+      "url": "https://www.youtube.com/watch?v=nuML9SmdbJ4",
+      "coverage": "transcript",
+      "upload_date": null
+    },
+    {
+      "id": "J1f5b4vcxCQ",
+      "type": "video",
+      "title": "Dependency Injection, The Best Pattern",
+      "url": "https://www.youtube.com/watch?v=J1f5b4vcxCQ",
+      "coverage": "transcript",
+      "upload_date": null
+    },
+    {
+      "id": "tKbV6BpH-C8",
+      "type": "video",
+      "title": "Premature Optimization",
+      "url": "https://www.youtube.com/watch?v=tKbV6BpH-C8",
+      "coverage": "transcript",
+      "upload_date": null
+    }
+  ]
+}

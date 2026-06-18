@@ -20,7 +20,7 @@
 <p align="center">
   <a href="https://lucasxcoder.github.io/engram/docs/trailer.html#clean"><b>▶&nbsp; Watch the trailer</b></a>
   &nbsp;·&nbsp;
-  <a href="https://lucasxcoder.github.io/engram/examples/demo-brain/graph.html"><b>🧠&nbsp; Explore a live brain graph</b></a>
+  <a href="https://lucasxcoder.github.io/engram/examples/codeaesthetic/graph.html"><b>🧠&nbsp; Explore a live brain</b></a> (real channel · 141 atoms)
 </p>
 
 <p align="center">
@@ -29,6 +29,13 @@
   <a href="#the-fidelity-guardrail">Fidelity</a> ·
   <a href="#cli">CLI</a> ·
   <a href="#the-visualization">Visualization</a>
+</p>
+
+<p align="center">
+  <a href="https://lucasxcoder.github.io/engram/docs/trailer.html#clean">
+    <img src="docs/trailer-preview.gif" alt="Engram — cinematic trailer (click to watch)" width="820">
+  </a>
+  <br><sub><i>click to watch the full interactive trailer</i></sub>
 </p>
 
 ---
@@ -145,7 +152,7 @@ python -m engram which <term...>           "which brain knows about X?" across t
 
 ## The visualization
 
-[**▶ Open the live demo graph**](https://lucasxcoder.github.io/engram/examples/demo-brain/graph.html) — `graph.html`
+[**▶ Open a live brain graph**](https://lucasxcoder.github.io/engram/examples/codeaesthetic/graph.html) (a real 141-atom channel) — `graph.html`
 is a single self-contained file — no build step, no dependencies, no network. It runs
 a live force-directed ("jelly") simulation on a canvas, warm-started from a layout computed in
 Python, and layers a glass UI on top:
